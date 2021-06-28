@@ -13,22 +13,6 @@ const createEndpoint = async (CLI_KEYS, CLI_ARGS) => {
     throw new Error('njs2 endpoint <endpoint-name> to be run from project root directory');
   }
 
-  const cliRes = await inquirer
-    .prompt([
-      {
-        type: 'list',
-        name: 'request_type',
-        message: 'Select the request type!',
-        choices: ['GET', 'POST'],
-      },
-      {
-        type: 'list',
-        name: 'is_secured',
-        message: 'Is API secured? (If yes it addes access_token validation to API):',
-        choices: ['Yes', 'No'],
-      },
-    ]);
-
   try {
     let splitString = CLI_ARGS[0].split("/");
     splitString = splitString.map((element, index) => {
@@ -57,8 +41,8 @@ const createEndpoint = async (CLI_KEYS, CLI_ARGS) => {
     let initFileContents = fs.readFileSync(path.resolve(process.cwd(), `${METHODS_PATH}/init.js`), 'utf8');
     initFileContents = initFileContents
       .replace(/<method-name>/g, METHOD_NAME.split(/(?:\.|-)+/).map((key, index) => key.charAt(0).toUpperCase() + key.slice(1)).join(""))
-      .replace(/<method-type>/g, cliRes.request_type)
-      .replace(/<is-secured>/g, cliRes.is_secured == 'Yes');
+      .replace(/<method-type>/g, 'GET')
+      .replace(/<is-secured>/g, false);
     fs.writeFileSync(path.resolve(process.cwd(), `${METHODS_PATH}/init.js`), initFileContents);
   } catch (e) {
     console.log(e);
