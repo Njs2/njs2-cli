@@ -16,5 +16,8 @@
     "request": "^2.88.2",
     "tar": "^6.1.0",
     "xml-js": "^1.6.11"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

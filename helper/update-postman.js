@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require('path');
 require('bytenode');
-baseInitialize = require(`${path.resolve(process.cwd(), `Njs2-modules/njs2-base/base/baseInitialize.class`)}`);
+baseInitialize = require(`${path.resolve(process.cwd(), `node_modules/njs2-base/base/baseInitialize.class`)}`);
 const updatePostman = async () => {
   if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
     throw new Error('njs2 update-postman to be run from project root directory');
