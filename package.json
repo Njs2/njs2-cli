@@ -1,6 +1,6 @@
 {
   "name": "@njs2/cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -13,7 +13,6 @@
     "bytenode": "^1.3.2",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.1.0",
-    "request": "^2.88.2",
     "tar": "^6.1.0",
     "xml-js": "^1.6.11"
   },

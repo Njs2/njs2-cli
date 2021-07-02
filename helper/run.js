@@ -1,6 +1,7 @@
 const child_process = require("child_process");
 
 const run = async (CLI_KEYS, CLI_ARGS) => {
+  await require('./update-postman').updatePostman();
   if(CLI_ARGS[0] == 'serverless') {
     child_process.execSync('sls offline start', { stdio: 'inherit' });
   } else {
