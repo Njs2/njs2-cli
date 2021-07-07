@@ -14,17 +14,16 @@ const CMD = CLI_ARGS[0];
 CLI_ARGS = CLI_ARGS.slice(1);
 
 if (Object.keys(CLI_KEYS)[0] == 'help') {
-  console.log(`njs2 plugin <package-name>
-njs2 compile (Run from plugin directory)
+  console.log(`
 njs2 project <project-name>
 njs2 endpoint <endpoint-name>
-njs2 update-postman`);
+njs2 run`);
 } else {
   switch (CMD) {
-    case 'plugin':
-      // Install plugins to project
-      require('./helper/install').install(CLI_KEYS, CLI_ARGS);
-      break;
+    // case 'plugin':
+    //   // Install plugins to project
+    //   require('./helper/install').install(CLI_KEYS, CLI_ARGS);
+    //   break;
 
     case 'compile':
       // Complie plugins and create build
@@ -51,11 +50,10 @@ njs2 update-postman`);
 
     default:
       console.log(`Invalid cmd and options:
-      njs2 plugin <package-name>
-      njs2 compile (Run from plugin directory)
-      njs2 project <project-name>
-      njs2 endpoint <endpoint-name>
-      njs2 update-postman`);
+njs2 project <project-name>
+njs2 endpoint <endpoint-name>
+njs2 update-postman
+njs2 run`);
       break;
   }
 }
