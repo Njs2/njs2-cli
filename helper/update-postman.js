@@ -48,7 +48,7 @@ const updatePostman = async () => {
       "response": []
     };
 
-    const paramsDef = Object.keys(paramsList).map(params => {
+    let paramsDef = Object.keys(paramsList).map(params => {
       return {
         "key": paramsList[params].name,
         "value": paramsList[params].default,
@@ -56,6 +56,22 @@ const updatePostman = async () => {
         "description": paramsList[params].description,
         "type": "text"
       };
+    });
+
+    paramsDef.push({
+      "key": 'enc_state',
+      "value": '1',
+      "disabled": false,
+      "description": 'Encryption status: 1- Enable, 2- Disable',
+      "type": "text"
+    });
+
+    paramsDef.push({
+      "key": 'data',
+      "value": '',
+      "disabled": true,
+      "description": 'Encrypted data and url encode(URLSearchParams) the encrypted data to handle special characters',
+      "type": "text"
     });
 
     if (apiInitObj.pkgInitializer.requestMethod.toUpperCase() == 'GET') {

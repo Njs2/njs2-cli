@@ -21,7 +21,7 @@ const createProject = async (CLI_KEYS, CLI_ARGS) => {
     child_process.execSync(`cd ${PROJECT_NAME} && npm i ${BASE_PACKAGE_URL}`, { stdio: 'inherit' });
     child_process.execSync(`cd ${PROJECT_NAME} && cp -rn ./node_modules/njs2-base/package/template/frameworkStructure/. .`, { stdio: 'inherit' });
     child_process.execSync(`cd ${PROJECT_NAME} && npm i -D serverless-prune-plugin serverless-offline`, { stdio: 'inherit' });
-    child_process.execSync(`cd ${PROJECT_NAME}/cms && npm i`, { stdio: 'inherit' });
+    // child_process.execSync(`cd ${PROJECT_NAME}/cms && npm i`, { stdio: 'inherit' });
   } catch (e) {
     console.log(e);
   }
