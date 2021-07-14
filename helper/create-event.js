@@ -23,7 +23,7 @@ const createEvent = async (CLI_KEYS, CLI_ARGS) => {
       throw new Error(`Event already exists: ${EVENT_PATH}`);
     }
 
-    const templateContent = fs.readFileSync(path.resolve(process.cwd(), `node_modules/njs2-base/package/template/eventStructure/eventHandler.js`), 'utf8');
+    const templateContent = fs.readFileSync(path.resolve(process.cwd(), `node_modules/@njs2/base/package/template/eventStructure/eventHandler.js`), 'utf8');
     fs.writeFileSync(path.resolve(process.cwd(), EVENT_PATH), templateContent);
 
     const listenerConfig = require(path.resolve(process.cwd(), `src/config/listener.json`));

@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require('path');
 require('bytenode');
-baseInitialize = require(`${path.resolve(process.cwd(), `node_modules/njs2-base/base/baseInitialize.class`)}`);
+baseInitialize = require(`${path.resolve(process.cwd(), `node_modules/@njs2/base/base/baseInitialize.class`)}`);
 const updatePostman = async () => {
   if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
     throw new Error('njs2 update-postman to be run from project root directory');
@@ -26,6 +26,11 @@ const updatePostman = async () => {
     const apiInit = require(path.resolve(process.cwd(), `src/methods/${apiPath}/init.js`));
     const apiInitObj = new apiInit();
     const paramsList = apiInitObj.getParameter();
+
+    let fileExists = false;
+    Object.keys(paramsList).map(key => {
+      if (paramsList[key].type == 'file') fileExists = true;
+    });
 
     let apiDefination = {
       "name": apiPath.split('.').join('/'),
@@ -54,32 +59,41 @@ const updatePostman = async () => {
         "value": paramsList[params].default,
         "disabled": !paramsList[params].required,
         "description": paramsList[params].description,
-        "type": "text"
+        "type": fileExists && apiInitObj.pkgInitializer.requestMethod.toUpperCase() == 'POST' && paramsList[params].type == "file" ? "file" : "text"
       };
     });
 
-    paramsDef.push({
-      "key": 'enc_state',
-      "value": '1',
-      "disabled": false,
-      "description": 'Encryption status: 1- Enable, 2- Disable',
-      "type": "text"
-    });
+    if (!(fileExists && apiInitObj.pkgInitializer.requestMethod.toUpperCase() == 'POST')) {
+      paramsDef.push({
+        "key": 'enc_state',
+        "value": '1',
+        "disabled": false,
+        "description": 'Encryption status: 1- Enable, 2- Disable',
+        "type": "text"
+      });
 
-    paramsDef.push({
-      "key": 'data',
-      "value": '',
-      "disabled": true,
-      "description": 'Encrypted data and url encode(URLSearchParams) the encrypted data to handle special characters',
-      "type": "text"
-    });
+      paramsDef.push({
+        "key": 'data',
+        "value": '',
+        "disabled": true,
+        "description": 'Encrypted data and url encode(URLSearchParams) the encrypted data to handle special characters',
+        "type": "text"
+      });
+    }
 
     if (apiInitObj.pkgInitializer.requestMethod.toUpperCase() == 'GET') {
       apiDefination.request.url.query = paramsDef;
     } else if (apiInitObj.pkgInitializer.requestMethod.toUpperCase() == 'POST') {
-      apiDefination.request.body = {
-        "mode": "urlencoded",
-        "urlencoded": paramsDef
+      if (fileExists) {
+        apiDefination.request.body = {
+          "mode": "formdata",
+          "formdata": paramsDef
+        }
+      } else {
+        apiDefination.request.body = {
+          "mode": "urlencoded",
+          "urlencoded": paramsDef
+        }
       }
     }
 

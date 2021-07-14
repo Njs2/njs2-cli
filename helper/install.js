@@ -9,7 +9,7 @@ const inquirer = require('inquirer');
 const { validatePackageVersion } = require("./utils");
 
 let PACKAGE_BASE_URL = 'https://njs2.s3.ap-south-1.amazonaws.com';
-let BASE_PACKAGE_URL = 'https://njs2.s3.ap-south-1.amazonaws.com/njs2-base/latest.tar.gz';
+let BASE_PACKAGE_URL = 'https://njs2.s3.ap-south-1.amazonaws.com/@njs2/base/latest.tar.gz';
 
 /**
  * @function downloadPackage
@@ -81,11 +81,11 @@ const getLatestSourceName = async (packageName) => {
 const install = async (CLI_KEYS, CLI_ARGS) => {
   try{
   if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
-    throw new Error('Run from project root direcory: njs2 plugin <package-name> (Eg: njs2-base@latest)');
+    throw new Error('Run from project root direcory: njs2 plugin <package-name> (Eg: @njs2/base@latest)');
 
   const packageJson = require(`${path.resolve(process.cwd(), `package.json`)}`);
   if (packageJson['njs2-type'] != 'project') {
-    throw new Error('Run from project root direcory: njs2 plugin <package-name> (Eg: njs2 plugin njs2-base@latest)');
+    throw new Error('Run from project root direcory: njs2 plugin <package-name> (Eg: njs2 plugin @njs2/base@latest)');
   }
 
   let packageName = CLI_ARGS[0];
@@ -114,7 +114,7 @@ const install = async (CLI_KEYS, CLI_ARGS) => {
 
   let PACKAGE_PATH = '';
   let remoteURL = '';
-  if (packageName == 'njs2-base') {
+  if (packageName == '@njs2/base') {
     remoteURL = `${BASE_PACKAGE_URL}`;
   } else if (packageName.split('@').length == 2 && packageName.split('@')[1] != 'latest') {
     PACKAGE_PATH = packageName;
@@ -150,7 +150,7 @@ const install = async (CLI_KEYS, CLI_ARGS) => {
     if (pluginPackageJson['njs2-type'] == 'endpoint') {
       require('./init-package').initPackage(fileName.split('.')[0]);
     } else if (pluginPackageJson['njs2-type'] == 'base') {
-      child_process.execSync(`cp -rn ./Njs2-modules/njs2-base/package/template/frameworkStructure/. .`, { stdio: 'inherit' });
+      child_process.execSync(`cp -rn ./Njs2-modules/@njs2/base/package/template/frameworkStructure/. .`, { stdio: 'inherit' });
       child_process.execSync(`npm i -D serverless-prune-plugin serverless-offline`, { stdio: 'inherit' });
     }
 
