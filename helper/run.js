@@ -2,7 +2,7 @@ const child_process = require("child_process");
 
 const run = async (CLI_KEYS, CLI_ARGS) => {
   // await require('./update-postman').updatePostman();
-  child_process.execSync('eslint . --ext .js', { stdio: 'inherit' });
+  child_process.execSync('npm run lint', { stdio: 'inherit' });
   // Option to skip cms build
   // if (!Object.keys(CLI_KEYS).includes('skip-cms-build'))
   //   child_process.execSync(`cd cms && npm run build`, { stdio: 'inherit' });
