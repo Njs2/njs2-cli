@@ -150,7 +150,7 @@ const install = async (CLI_KEYS, CLI_ARGS) => {
     if (pluginPackageJson['njs2-type'] == 'endpoint') {
       require('./init-package').initPackage(fileName.split('.')[0]);
     } else if (pluginPackageJson['njs2-type'] == 'base') {
-      child_process.execSync(`cp -rn ./Njs2-modules/@njs2/base/package/template/frameworkStructure/. .`, { stdio: 'inherit' });
+      child_process.execSync(`cp -rn ./Njs2-modules/@njs2/base/template/frameworkStructure/. .`, { stdio: 'inherit' });
       child_process.execSync(`npm i -D serverless-prune-plugin serverless-offline`, { stdio: 'inherit' });
     }
 

@@ -20,7 +20,7 @@ const obfuscateFilesInDirectory = async (dirPath, excludeFolders) => {
     for (let i = 0; i < files.length; i++) {
       let pathName = path.join(dirPath, files[i]);
       let stat = fs.lstatSync(pathName);
-      if (package_json['njs2-type'] == 'base' && pathName.replace(/\\/g, '/') == 'dist/compiled/package/template') continue;
+      if (package_json['njs2-type'] == 'base' && pathName.replace(/\\/g, '/') == 'dist/compiled/template') continue;
 
       if (stat.isDirectory() && !excludeFolders.includes(pathName.replace(/\\/g, '/'))) {
         await obfuscateFilesInDirectory(pathName, excludeFolders);

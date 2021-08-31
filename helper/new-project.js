@@ -25,6 +25,7 @@ const createProject = async (CLI_KEYS, CLI_ARGS) => {
       "eslint-plugin-import": "2.22.0",
       "eslint-plugin-node": "11.1.0",
       "eslint-plugin-security": "1.4.0",
+      "nodemon": "^2.0.12",
       "prettier": "2.0.5",
       "serverless-prune-plugin": "^1.5.1"
     };
@@ -33,7 +34,7 @@ const createProject = async (CLI_KEYS, CLI_ARGS) => {
     };
     fs.writeFileSync(`${path.resolve(process.cwd(), `${PROJECT_NAME}/package.json`)}`, JSON.stringify(packageJson, null, 2));
     child_process.execSync(`cd ${PROJECT_NAME} && npm i ${BASE_PACKAGE_URL}`, { stdio: 'inherit' });
-    child_process.execSync(`cd ${PROJECT_NAME} && cp -rn ./node_modules/@njs2/base/package/template/frameworkStructure/. .`, { stdio: 'inherit' });
+    child_process.execSync(`cd ${PROJECT_NAME} && cp -rn ./node_modules/@njs2/base/template/frameworkStructure/. .`, { stdio: 'inherit' });
     child_process.execSync(`cd ${PROJECT_NAME} && npm i`, { stdio: 'inherit' });
   } catch (e) {
     console.log(e);

@@ -30,7 +30,7 @@ const createEndpoint = async (CLI_KEYS, CLI_ARGS) => {
     if (fs.existsSync(METHODS_PATH)) {
       throw new Error(`Method folder already exists: ${METHODS_PATH}`);
     }
-    const COPY_TEMP_SCRIPT = `cp -rn ${path.resolve(process.cwd(), '.')}/node_modules/@njs2/base/package/template/methodStructure/. ${path.resolve(process.cwd(), '.')}/${METHODS_PATH}`;
+    const COPY_TEMP_SCRIPT = `cp -rn ${path.resolve(process.cwd(), '.')}/node_modules/@njs2/base/template/methodStructure/. ${path.resolve(process.cwd(), '.')}/${METHODS_PATH}`;
 
     child_process.execSync(COPY_TEMP_SCRIPT);
     let executeFileContents = fs.readFileSync(path.resolve(process.cwd(), `${METHODS_PATH}/action.js`), 'utf8');
