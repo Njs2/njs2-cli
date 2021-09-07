@@ -82,7 +82,7 @@ const compile = async () => {
       then rm -rf ./dist/${package_json.name}@${package_json.version}.tar.gz ;
       fi && rsync -r * ./dist/compiled`);
 
-    await obfuscateFiles(filePath, excludeFolders);
+    // await obfuscateFiles(filePath, excludeFolders);
 
     await tar.c(
       {
@@ -90,8 +90,11 @@ const compile = async () => {
         filter: (pathname => { return pathname != 'dist'; })
       },
       fs.readdirSync('./dist/compiled')
-    ).pipe(fs.createWriteStream(`./dist/${package_json.name}@${package_json.version}.tar.gz`)).on('close', () => {
+    ).pipe(fs.createWriteStream(`./dist/${package_json.version}.tar.gz`)).on('close', () => {
       fs.rmdirSync('./dist/compiled', { recursive: true });
+      child_process.execSync(`cp ./dist/${package_json.version}.tar.gz ./dist/latest.tar.gz`);
+      child_process.execSync(`aws s3 sync ./dist/ s3://njs2/${package_json.name}/ --profile NJS2-REPO`);
+      console.log("\nSuccessfully compiled and encrypted files in directory", filePath);
     });
   } catch (e) {
     console.error(e);

@@ -35,7 +35,7 @@ const updatePostman = async () => {
     let apiDefination = {
       "name": apiPath.split('.').join('/'),
       "request": {
-        "method": apiInitObj.pkgInitializer.requestMethod.toUpperCase(),
+        "method": typeof apiInitObj.pkgInitializer.requestMethod == "string" ? apiInitObj.pkgInitializer.requestMethod.toUpperCase() : apiInitObj.pkgInitializer.requestMethod[0].toUpperCase(),
         "header": apiInitObj.pkgInitializer.isSecured ? [{
           "key": "access_token",
           "value": "",

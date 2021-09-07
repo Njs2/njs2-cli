@@ -17,13 +17,19 @@ if (Object.keys(CLI_KEYS)[0] == 'help') {
   console.log(`
 njs2 project <project-name>
 njs2 endpoint <endpoint-name>
+njs2 plugin <plugin-name>
 njs2 run`);
 } else {
   switch (CMD) {
-    // case 'plugin':
-    //   // Install plugins to project
-    //   require('./helper/install').install(CLI_KEYS, CLI_ARGS);
-    //   break;
+    case 'plugin':
+      // Install plugins to project
+      require('./helper/install').install(CLI_KEYS, CLI_ARGS);
+      break;
+
+      case 'install-package':
+      // Install plugins to project
+      require('./helper/install-package').install(CLI_KEYS, CLI_ARGS);
+      break;
 
     case 'compile':
       // Complie plugins and create build
@@ -40,9 +46,9 @@ njs2 run`);
       require('./helper/create-endpoint').createEndpoint(CLI_KEYS, CLI_ARGS);
       break;
 
-    case 'update-postman':
-      require('./helper/update-postman').updatePostman();
-      break;
+    // case 'update-postman':
+    //   require('./helper/update-postman').updatePostman();
+    //   break;
 
     case 'run':
       require('./helper/run').run(CLI_KEYS, CLI_ARGS);
@@ -52,7 +58,7 @@ njs2 run`);
       console.log(`Invalid cmd and options:
 njs2 project <project-name>
 njs2 endpoint <endpoint-name>
-njs2 update-postman
+mjs2 plugin <plugin-name>
 njs2 run`);
       break;
   }
