@@ -26,7 +26,7 @@ njs2 run`);
       require('./helper/install').install(CLI_KEYS, CLI_ARGS);
       break;
 
-      case 'install-package':
+    case 'install-package':
       // Install plugins to project
       require('./helper/install-package').install(CLI_KEYS, CLI_ARGS);
       break;
@@ -52,6 +52,10 @@ njs2 run`);
 
     case 'run':
       require('./helper/run').run(CLI_KEYS, CLI_ARGS);
+      break;
+
+    case 'uninstall-package':
+      require('./helper/uninstall-package').uninstallPackage(CLI_KEYS, CLI_ARGS);
       break;
 
     default:

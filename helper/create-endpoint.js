@@ -41,7 +41,7 @@ const createEndpoint = async (CLI_KEYS, CLI_ARGS) => {
     let initFileContents = fs.readFileSync(path.resolve(process.cwd(), `${METHODS_PATH}/init.js`), 'utf8');
     initFileContents = initFileContents
       .replace(/<method-name>/g, METHOD_NAME.split(/(?:\.|-)+/).map((key, index) => key.charAt(0).toUpperCase() + key.slice(1)).join(""))
-      .replace(/<method-type>/g, 'GET')
+      .replace(/<method-type>/g, ['GET'])
       .replace(/<is-secured>/g, false);
     fs.writeFileSync(path.resolve(process.cwd(), `${METHODS_PATH}/init.js`), initFileContents);
   } catch (e) {

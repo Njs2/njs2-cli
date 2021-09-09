@@ -36,12 +36,20 @@ const updatePostman = async () => {
       "name": apiPath.split('.').join('/'),
       "request": {
         "method": typeof apiInitObj.pkgInitializer.requestMethod == "string" ? apiInitObj.pkgInitializer.requestMethod.toUpperCase() : apiInitObj.pkgInitializer.requestMethod[0].toUpperCase(),
-        "header": apiInitObj.pkgInitializer.isSecured ? [{
-          "key": "access_token",
-          "value": "",
-          "description": "JWT access token",
+        "header": [{
+          "key": 'enc_state',
+          "value": '1',
+          "disabled": true,
+          "description": 'Encryption status: 1- Enable, 2- Disable',
           "type": "text"
-        }] : [],
+        },
+        {
+          "key": 'lng_key',
+          "value": 'en',
+          "disabled": true,
+          "description": 'Langauage key',
+          "type": "text"
+        }],
         "url": {
           "raw": `${base_url && base_url.length ? base_url : '{{base_url}}'}/${apiPath.split('.').join('/')}`,
           "host": [
@@ -53,25 +61,25 @@ const updatePostman = async () => {
       "response": []
     };
 
+    if (apiInitObj.pkgInitializer.isSecured) {
+      apiDefination.request.header.push({
+        "key": "access_token",
+        "value": "",
+        "description": "JWT access token",
+        "type": "text"
+      });
+    }
     let paramsDef = Object.keys(paramsList).map(params => {
       return {
         "key": paramsList[params].name,
         "value": paramsList[params].default,
         "disabled": !paramsList[params].required,
         "description": paramsList[params].description,
-        "type": fileExists && apiInitObj.pkgInitializer.requestMethod.toUpperCase() == 'POST' && paramsList[params].type == "file" ? "file" : "text"
+        "type": fileExists && apiInitObj.pkgInitializer.requestMethod[0].toUpperCase() == 'POST' && paramsList[params].type == "file" ? "file" : "text"
       };
     });
 
-    if (!(fileExists && apiInitObj.pkgInitializer.requestMethod.toUpperCase() == 'POST')) {
-      paramsDef.push({
-        "key": 'enc_state',
-        "value": '1',
-        "disabled": false,
-        "description": 'Encryption status: 1- Enable, 2- Disable',
-        "type": "text"
-      });
-
+    if (!(fileExists && apiInitObj.pkgInitializer.requestMethod[0].toUpperCase() == 'POST')) {
       paramsDef.push({
         "key": 'data',
         "value": '',
@@ -81,9 +89,9 @@ const updatePostman = async () => {
       });
     }
 
-    if (apiInitObj.pkgInitializer.requestMethod.toUpperCase() == 'GET') {
+    if (apiInitObj.pkgInitializer.requestMethod[0].toUpperCase() == 'GET') {
       apiDefination.request.url.query = paramsDef;
-    } else if (apiInitObj.pkgInitializer.requestMethod.toUpperCase() == 'POST') {
+    } else if (apiInitObj.pkgInitializer.requestMethod[0].toUpperCase() == 'POST') {
       if (fileExists) {
         apiDefination.request.body = {
           "mode": "formdata",

@@ -4,8 +4,6 @@ const fs = require("fs");
 const child_process = require("child_process");
 let request = require('request');
 const path = require('path');
-let xml2json = require('xml-js').xml2json;
-const inquirer = require('inquirer');
 const { validatePackageVersion } = require("./utils");
 
 let PACKAGE_BASE_URL = 'https://njs2.s3.ap-south-1.amazonaws.com';
@@ -49,41 +47,6 @@ const replaceAt = function (str, index, replacement) {
   return str.substr(0, index) + replacement + str.substr(index + replacement.length);
 }
 
-/**
- * @function getLatestSourceName
- * @param {*} packageName 
- * @returns packagename@version
- * @description Search for the latest package from remote source
- */
-const getLatestSourceName = async (packageName) => {
-  const options = {
-    'method': 'GET',
-    'url': `${PACKAGE_BASE_URL}?prefix=${packageName}`
-  };
-  const xmlRes = await new Promise((resolve, reject) => {
-    request(options, (err, res, body) => {
-      resolve(res.body);
-    })
-  });
-
-  let string = xml2json(xmlRes, { compact: true, spaces: 4 });
-  let bucketList = JSON.parse(string);
-  if (!bucketList.ListBucketResult.Contents) {
-    throw new Error("Package not found");
-  }
-
-  let latestPackage;
-  if (bucketList.ListBucketResult.Contents.length) {
-    latestPackage = bucketList.ListBucketResult.Contents.map(bucketObj => {
-      console.log(bucketObj.Key._text);
-      return bucketObj.Key._text.split('/')[2].split('.tar.gz')[0];
-    }).reverse()[0];
-  } else {
-    latestPackage = bucketList.ListBucketResult.Contents.Key._text.split('/')[1].split('@')[1].split('.tar.gz')[0];
-  }
-  return `${packageName}@${latestPackage}`;
-}
-
 const install = async (CLI_KEYS, CLI_ARGS) => {
   try {
     if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
@@ -95,26 +58,14 @@ const install = async (CLI_KEYS, CLI_ARGS) => {
     }
 
     let packageName = CLI_ARGS[0];
-    console.log(packageName.split('@').length, validatePackageVersion(packageName.split('@')[1]));
-    if (!packageName || packageName.length == 0 || (packageName.split('@').length == 2 && !validatePackageVersion(packageName.split('@')[1]))) {
-      const cliRes = await inquirer
-        .prompt([
-          {
-            name: 'packageName',
-            message: 'Enter package name: ',
-            validate: (val) => {
-              return val && val.length > 0;
-            }
-          },
-          {
-            name: 'version',
-            message: 'Enter version number: (Eg: 1.0.0) (Default: latest)',
-            default: 'latest',
-            validate: validatePackageVersion
-          }
-        ]);
+    if (!packageName || packageName.length == 0) {
+      throw new Error('Invalid package name');
+    }
 
-      packageName = cliRes.packageName && cliRes.version ? `${cliRes.packageName}@${cliRes.version}` : cliRes.packageName ? cliRes.packageName : null;
+    if (packageName.indexOf('@') == 0 && packageName.split('@').length == 3 && !validatePackageVersion(packageName.split('@')[2])) {
+      throw new Error('Invalid package version');
+    } else if (packageName.indexOf('@') == 0 && packageName.split('@').length == 2) {
+      packageName = `${packageName}@latest`;
     }
 
 
@@ -133,7 +84,6 @@ const install = async (CLI_KEYS, CLI_ARGS) => {
     if (!remoteFileExists) throw new Error("Remote package dose not Exists!!")
     const urlComp = PACKAGE_PATH.split('/').slice(0, 2).join('/');
     const fileName = `${urlComp}.tar.gz`;
-    console.log(fileName, );
     if (!fs.existsSync('Njs2-modules'))
       fs.mkdirSync("Njs2-modules");
 
