@@ -7,10 +7,16 @@ const initEnv = async (LIBRARY_NAME) => {
   envFileContents = JSON.parse(envFileContents);
   projectEnvFileContents = JSON.parse(projectEnvFileContents);
 
-  const configKey = LIBRARY_NAME.split('/')[1].toUpperCase();
-  projectEnvFileContents[configKey] ? Object.keys(envFileContents).map(key => {
-    !projectEnvFileContents[configKey][key] ? projectEnvFileContents[configKey][key] = envFileContents[key] : false;
-  }) : projectEnvFileContents[configKey] = envFileContents;
+  // If public package then read other then organisation name key
+  const configKey = LIBRARY_NAME.split('/').length == 1 ? LIBRARY_NAME : LIBRARY_NAME.split('/')[1].toUpperCase();
+  if (projectEnvFileContents[configKey]) {
+    Object.keys(envFileContents).map(key => {
+      if (!projectEnvFileContents[configKey][key])
+        projectEnvFileContents[configKey][key] = envFileContents[key];
+    });
+  } else {
+    projectEnvFileContents[configKey] = envFileContents;
+  }
 
   fs.writeFileSync(path.resolve(process.cwd(), `src/config/config.json`), JSON.stringify(projectEnvFileContents, null, 2), 'utf8');
 }

@@ -3,14 +3,7 @@ const path = require('path');
 require('bytenode');
 baseInitialize = require(`${path.resolve(process.cwd(), `node_modules/@njs2/base/base/baseInitialize.class`)}`);
 const updatePostman = async () => {
-  if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
-    throw new Error('njs2 update-postman to be run from project root directory');
-
   const packageJson = require(`${path.resolve(process.cwd(), `package.json`)}`);
-  if (packageJson['njs2-type'] != 'project') {
-    throw new Error('njs2 update-postman to be run from project root directory');
-  }
-
   const base_url = require(path.resolve(process.cwd(), "src/config/config.json")).API_ENDPOINT;
   const apiPaths = fs.readdirSync(path.resolve(process.cwd(), "src/methods"), { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
   const apiRes = {

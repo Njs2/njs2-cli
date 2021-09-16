@@ -10,10 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.988.0",
     "bytenode": "^1.3.2",
+    "follow-redirects": "^1.14.4",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.1.0",
-    "request": "^2.88.2",
     "tar": "^6.1.0",
     "xml-js": "^1.6.11"
   },

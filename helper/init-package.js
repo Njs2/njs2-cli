@@ -4,14 +4,14 @@ const fs = require('fs');
 const path = require('path');
 
 const initPackage = async (LIBRARY_NAME) => {
-  const PACKAGE = require(`${path.resolve(process.cwd(), `Njs2-modules/${LIBRARY_NAME}/package.json`)}`);
+  const PACKAGE = require(`${path.resolve(process.cwd(), `njs2_modules/${LIBRARY_NAME}/package.json`)}`);
 
   try {
     const PLUGINS = PACKAGE['njs2-plugins'];
     PLUGINS.map(plugin => {
       const METHOD_NAME = `${PACKAGE['njs2-method']}.${plugin}`;
       const METHODS_PATH = `src/methods/${METHOD_NAME}`;
-      const COPY_TEMP_SCRIPT = `cp -rn ${path.resolve(process.cwd(), '.')}/node_modules/@njs2/base/template/pluginStructure/. ${path.resolve(process.cwd(), '.')}/${METHODS_PATH}`;
+      const COPY_TEMP_SCRIPT = `cp -rn "${path.resolve(process.cwd(), '.')}/node_modules/@njs2/base/template/pluginStructure/." "${path.resolve(process.cwd(), '.')}/${METHODS_PATH}"`;
 
       child_process.execSync(COPY_TEMP_SCRIPT);
       let executeFileContents = fs.readFileSync(path.resolve(process.cwd(), `${METHODS_PATH}/action.js`), 'utf8');
