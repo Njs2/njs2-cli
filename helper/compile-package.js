@@ -251,7 +251,6 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
       child_process.execSync(`cp ./dist/${package_json.version}.tar.gz ./dist/latest.tar.gz`);
       console.log(`\nSuccessfully compiled in directory`, filePath);
       if (syncRemote) {
-        await getS3BucketName();
         await Promise.all([
           uploadFileToS3(`${PACKAGE_BASE_PATH}/${package_json.name}/${package_json.version}.tar.gz`, `./dist/${package_json.version}.tar.gz`),
           uploadFileToS3(`${PACKAGE_BASE_PATH}/${package_json.name}/latest.tar.gz`, `./dist/latest.tar.gz`)

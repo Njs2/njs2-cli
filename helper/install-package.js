@@ -62,7 +62,6 @@ const isPackageExists = async (url) => {
     }).promise();
     return true;
   } catch (e) {
-    console.error(e);
     return false;
   }
 }

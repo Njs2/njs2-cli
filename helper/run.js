@@ -27,9 +27,9 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
   // Runs the lint proccess for syntax validations
   child_process.execSync('npm run lint', { stdio: 'inherit' });
 
-  switch (CLI_KEYS[0]) {
+  switch (CLI_ARGS[0]) {
     case 'serverless':
-      child_process.execSync('npm run serverless', { stdio: 'inherit' });
+      child_process.execSync('sls offline start --noPrependStageInUrl', { stdio: 'inherit' });
       break;
 
     case 'nodemon':
