@@ -3,7 +3,7 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 // TODO: @njs2/base
-const BASE_PACKAGE_URL = 'https://github.com/gautham-juego/njs2-base.git#code-review-1';
+const BASE_PACKAGE_URL = 'https://github.com/Njs2/njs2-base.git#0-0-1';
 
 const execute = async (CLI_KEYS, CLI_ARGS) => {
   try {
