@@ -2,29 +2,34 @@
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const BASE_PACKAGE_URL = 'https://github.com/Njs2/njs2-base.git';
+// TODO: @njs2/base
+const BASE_PACKAGE_URL = 'https://github.com/Njs2/njs2-base.git#0-0-1';
 
-const createProject = async (CLI_KEYS, CLI_ARGS) => {
-  if (CLI_ARGS.length == 0) {
-    throw new Error('Project name is mandatory parameter');
-  }
-
+const execute = async (CLI_KEYS, CLI_ARGS) => {
   try {
     const PROJECT_NAME = CLI_ARGS[0];
+    // Validations
+    if (!PROJECT_NAME) {
+      throw new Error('Project name is mandatory parameter');
+    }
+
     if (fs.existsSync(PROJECT_NAME)) {
       throw new Error(`Project folder already exists: ${PROJECT_NAME}`);
     }
+
     child_process.execSync(`mkdir ${PROJECT_NAME} && cd ${PROJECT_NAME} && npm init -y`, { stdio: 'inherit' });
-    let packageJson = require(`${path.resolve(process.cwd(), `${PROJECT_NAME}/package.json`)}`);
-    packageJson['njs2-type'] = 'project';
-    fs.writeFileSync(`${path.resolve(process.cwd(), `${PROJECT_NAME}/package.json`)}`, JSON.stringify(packageJson, null, 2));
     child_process.execSync(`cd ${PROJECT_NAME} && npm i ${BASE_PACKAGE_URL}`, { stdio: 'inherit' });
-    child_process.execSync(`cd ${PROJECT_NAME} && cp -rn ./node_modules/njs2-base/package/template/frameworkStructure/. .`, { stdio: 'inherit' });
-    child_process.execSync(`cd ${PROJECT_NAME} && npm i -D serverless-prune-plugin serverless-offline`, { stdio: 'inherit' });
-    child_process.execSync(`cd ${PROJECT_NAME}/cms && npm i`, { stdio: 'inherit' });
+    const dependencies = require(`${path.resolve(process.cwd(), `${PROJECT_NAME}/package.json`)}`).dependencies;
+    child_process.execSync(`cd ${PROJECT_NAME} && cp -rf ./node_modules/@njs2/base/template/frameworkStructure/. .`, { stdio: 'inherit' });
+    let packageJson = JSON.parse(fs.readFileSync(`${path.resolve(process.cwd(), `${PROJECT_NAME}/package.json`)}`, 'utf8'));
+    packageJson['njs2-type'] = 'project';
+    packageJson['name'] = PROJECT_NAME;
+    packageJson['dependencies'] = dependencies;
+    fs.writeFileSync(`${path.resolve(process.cwd(), `${PROJECT_NAME}/package.json`)}`, JSON.stringify(packageJson, null, 2));
+    child_process.execSync(`cd ${PROJECT_NAME} && npm i`, { stdio: 'inherit' });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
-module.exports.createProject = createProject;
+module.exports.execute = execute;
