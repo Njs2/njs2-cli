@@ -34,13 +34,13 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
 
     case 'nodemon':
       child_process.exec('./node_modules/.bin/nodemon express.js').stdout.pipe(process.stdin);
-      child_process.exec('./node_modules/.bin/nodemon socket.io.js').stdout.pipe(process.stdin);
+      child_process.exec('./node_modules/.bin/nodemon socketio.js').stdout.pipe(process.stdin);
       break;
 
     case 'express':
     default:
       child_process.exec('node express.js').stdout.pipe(process.stdin);
-      child_process.exec('node socket.io.js').stdout.pipe(process.stdin);
+      child_process.exec('node socketio.js').stdout.pipe(process.stdin);
       break;
   }
 }
