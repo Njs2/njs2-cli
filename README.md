@@ -16,7 +16,7 @@ njs2 --help
 ```
 
 ## Creating new Project
-To create a new project invoke `project` command with project name are argument. The command will generate the project structure and install the dependencies for the project.
+To create a new project, run `project` command with project name are argument. The command will generate the project structure and install the dependencies for the project.
 ```
 njs2 project <project-name>
 ```
