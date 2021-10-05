@@ -2,18 +2,17 @@
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const inquirer = require('inquirer');
 
-const createEndpoint = async (CLI_KEYS, CLI_ARGS) => {
-  if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
-    throw new Error('njs2 endpoint <endpoint-name> to be run from project root directory');
-
-  const package_json = require(`${path.resolve(process.cwd(), `package.json`)}`);
-  if (package_json['njs2-type'] != 'project') {
-    throw new Error('njs2 endpoint <endpoint-name> to be run from project root directory');
-  }
-
+const execute = async (CLI_KEYS, CLI_ARGS) => {
   try {
+    if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
+      throw new Error('njs2 endpoint <endpoint-name> to be run from project root directory');
+
+    const package_json = require(`${path.resolve(process.cwd(), `package.json`)}`);
+    if (package_json['njs2-type'] != 'project') {
+      throw new Error('njs2 endpoint <endpoint-name> to be run from project root directory');
+    }
+
     let splitString = CLI_ARGS[0].split("/");
     splitString = splitString.map((element, index) => {
       //Checking for index > 1 because if method name is "/user/detail" then second resource(detail) should
@@ -28,9 +27,9 @@ const createEndpoint = async (CLI_KEYS, CLI_ARGS) => {
     const METHOD_NAME = splitString.join('');
     const METHODS_PATH = `src/methods/${METHOD_NAME}`;
     if (fs.existsSync(METHODS_PATH)) {
-      throw new Error(`Method folder already exists: ${METHODS_PATH}`);
+      throw new Error(`Method already exists: ${METHODS_PATH}`);
     }
-    const COPY_TEMP_SCRIPT = `cp -rn ${path.resolve(process.cwd(), '.')}/node_modules/njs2-base/package/template/methodStructure/. ${path.resolve(process.cwd(), '.')}/${METHODS_PATH}`;
+    const COPY_TEMP_SCRIPT = `cp -rn "${path.resolve(process.cwd(), '.')}/node_modules/@njs2/base/template/methodStructure/." "${path.resolve(process.cwd(), '.')}/${METHODS_PATH}"`;
 
     child_process.execSync(COPY_TEMP_SCRIPT);
     let executeFileContents = fs.readFileSync(path.resolve(process.cwd(), `${METHODS_PATH}/action.js`), 'utf8');
@@ -49,4 +48,4 @@ const createEndpoint = async (CLI_KEYS, CLI_ARGS) => {
   }
 }
 
-module.exports.createEndpoint = createEndpoint;
+module.exports.execute = execute;
