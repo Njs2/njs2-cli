@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 let CLI_KEYS = {};
 let CLI_ARGS = [];
+console.log(process.argv);
 for (let i = 0; i < process.argv.slice(2).length; i++) {
+  console.log(process.argv.slice(2)[i]);
   if (process.argv.slice(2)[i].split('--').length > 1) {
     CLI_KEYS[process.argv.slice(2)[i].split('--')[1]] = process.argv.slice(2)[i + 1];
     i++;
@@ -9,9 +11,10 @@ for (let i = 0; i < process.argv.slice(2).length; i++) {
     CLI_ARGS.push(process.argv.slice(2)[i]);
   }
 }
-
+console.log({CLI_ARGS})
 const CMD = CLI_ARGS[0];
 CLI_ARGS = CLI_ARGS.slice(1);
+console.log("====>",{CMD, CLI_ARGS});
 switch (CMD) {
   case 'project':
     // Create new project
@@ -45,6 +48,9 @@ switch (CMD) {
   case 'create-package':
     require('./helper/create-package').execute(CLI_KEYS, CLI_ARGS);
     break;
+  case 'library':
+    require('./helper/create-lib').execute(CLI_KEYS, CLI_ARGS);
+    break;
 
   //TODO
   case 'help':
@@ -73,3 +79,6 @@ njs2 compile
 njs2 create-package <package-name>`);
     break;
 }
+
+
+//TODO : library -- folder name -- foldername 
