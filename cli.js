@@ -1,59 +1,61 @@
 #!/usr/bin/env node
 let CLI_KEYS = {};
 let CLI_ARGS = [];
-console.log(process.argv);
+
 for (let i = 0; i < process.argv.slice(2).length; i++) {
-  console.log(process.argv.slice(2)[i]);
-  if (process.argv.slice(2)[i].split('--').length > 1) {
-    CLI_KEYS[process.argv.slice(2)[i].split('--')[1]] = process.argv.slice(2)[i + 1];
+  if (process.argv.slice(2)[i].split("--").length > 1) {
+    CLI_KEYS[process.argv.slice(2)[i].split("--")[1]] =
+      process.argv.slice(2)[i + 1];
     i++;
   } else {
     CLI_ARGS.push(process.argv.slice(2)[i]);
   }
 }
-console.log({CLI_ARGS})
+
 const CMD = CLI_ARGS[0];
 CLI_ARGS = CLI_ARGS.slice(1);
-console.log("====>",{CMD, CLI_ARGS});
+
 switch (CMD) {
-  case 'project':
+  case "project":
     // Create new project
-    require('./helper/new-project').execute(CLI_KEYS, CLI_ARGS);
+    require("./helper/new-project").execute(CLI_KEYS, CLI_ARGS);
     break;
 
-  case 'endpoint':
+  case "endpoint":
     // Create new endpoint
-    require('./helper/create-endpoint').execute(CLI_KEYS, CLI_ARGS);
+    require("./helper/create-endpoint").execute(CLI_KEYS, CLI_ARGS);
     break;
 
-  case 'run':
-    require('./helper/run').execute(CLI_KEYS, CLI_ARGS);
+  case "run":
+    require("./helper/run").execute(CLI_KEYS, CLI_ARGS);
     break;
 
-  case 'package':
+  case "package":
     // Install packages to project
-    require('./helper/install-package').execute(CLI_KEYS, CLI_ARGS);
+    require("./helper/install-package").execute(CLI_KEYS, CLI_ARGS);
     break;
 
-  case 'rm-package':
-    require('./helper/rm-package').execute(CLI_KEYS, CLI_ARGS);
+  case "rm-package":
+    require("./helper/rm-package").execute(CLI_KEYS, CLI_ARGS);
     break;
 
-  case 'compile':
+  case "compile":
     // Complie packages and create build
-    require('./helper/compile-package').execute(CLI_KEYS, CLI_ARGS);
+    require("./helper/compile-package").execute(CLI_KEYS, CLI_ARGS);
     break;
 
   // create package
-  case 'create-package':
-    require('./helper/create-package').execute(CLI_KEYS, CLI_ARGS);
-    break;
-  case 'library':
-    require('./helper/create-lib').execute(CLI_KEYS, CLI_ARGS);
+  case "create-package":
+    require("./helper/create-package").execute(CLI_KEYS, CLI_ARGS);
     break;
 
-  //TODO
-  case 'help':
+  // create library files
+  case "library":
+    require("./helper/create-lib").execute(CLI_KEYS, CLI_ARGS);
+    break;
+
+  
+  case "help":
     console.log(`
 njs2 project <project-name>
 njs2 endpoint <endpoint-name>
@@ -63,7 +65,8 @@ njs2 run nodemon
 njs2 package  <package-name>
 njs2 rm-package <package-name>
 njs2 compile
-njs2 create-package <package-name>`);
+njs2 create-package <package-name>
+njs2 library <folder-name> <filename> <options : [sql,mongo]>`);
     break;
 
   default:
@@ -76,9 +79,7 @@ njs2 run nodemon
 njs2 package  <package-name>
 njs2 rm-package <package-name>
 njs2 compile
-njs2 create-package <package-name>`);
+njs2 create-package <package-name>
+njs2 library <folder-name> <filename> <options : [sql,mongo]>`);
     break;
 }
-
-
-//TODO : library -- folder name -- foldername 
