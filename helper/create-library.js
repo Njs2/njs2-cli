@@ -29,7 +29,7 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
       fs.mkdirSync(LIB_PATH);
     }
     const LIB_FILE_NAME = CLI_ARGS[1];
-    const LIB_FILE_PATH = `src/library/${LIB_NAME}/${LIB_FILE_NAME}`;
+    const LIB_FILE_PATH = `src/library/${LIB_NAME}/${LIB_FILE_NAME}.lib.js`;
     if (fs.existsSync(LIB_FILE_PATH)) {
       throw new Error(`library file name  already exists: ${LIB_FILE_PATH}`);
     }
@@ -71,11 +71,13 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
       )}`,
       `${path.resolve(
         process.cwd(),
-        `src/library/` + CLI_ARGS[0] + `/` + LIB_FILE_NAME + ".js"
+        `src/library/` + CLI_ARGS[0] + `/` + LIB_FILE_NAME + ".lib.js"
       )}`
     );
+
+ 
     let executeFileContents = fs.readFileSync(
-      path.resolve(process.cwd(), LIB_PATH + "/" + LIB_FILE_NAME + ".js"),
+      path.resolve(process.cwd(), LIB_PATH + "/" + LIB_FILE_NAME + ".lib.js"),
       "utf8"
     );
     executeFileContents = executeFileContents
@@ -88,11 +90,44 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
         LIB_FILE_NAME.charAt(0).toUpperCase() + LIB_FILE_NAME.slice(1)
       );
     fs.writeFileSync(
-      path.resolve(process.cwd(), `${LIB_PATH}/${LIB_FILE_NAME}.js`),
+      path.resolve(process.cwd(), `${LIB_PATH}/${LIB_FILE_NAME}.lib.js`),
       executeFileContents
     );
+    console.log('\x1b[32m',`Sucessfully created ${LIB_PATH}/${LIB_FILE_NAME}.lib.js`);
+    if(CLI_ARGS[2] === "mongo"){
+      fs.renameSync(
+        `${path.resolve(
+          process.cwd(),
+          `src/library/`+ CLI_ARGS[0] + `/`+`model/model.js`
+        )}`,
+        `${path.resolve(
+          process.cwd(),
+          `src/library/`+ CLI_ARGS[0] + `/`+`model/` + LIB_FILE_NAME + ".js"
+        )}`
+      );
+
+      executeFileContents = fs.readFileSync(
+        path.resolve(process.cwd(), `src/library/`+ CLI_ARGS[0] + `/`+`model/` + LIB_FILE_NAME + ".js"),
+        "utf8"
+      );
+      executeFileContents = executeFileContents
+      .replace(
+        /<class-name>/g,
+        LIB_FILE_NAME.charAt(0).toLowerCase() + LIB_FILE_NAME.slice(1)
+      )
+      .replace(
+        /<function-name>/g,
+        LIB_FILE_NAME.charAt(0).toUpperCase() + LIB_FILE_NAME.slice(1)
+      );
+
+      fs.writeFileSync(
+        path.resolve(process.cwd(), `src/library/`+ CLI_ARGS[0] + `/`+`model/` + LIB_FILE_NAME + ".js"),
+        executeFileContents
+      );
+      console.log('\x1b[32m',`Sucessfully created src/library/`+ CLI_ARGS[0] + `/`+`model/` + LIB_FILE_NAME + ".js");
+    }
   } catch (e) {
-    console.log(e);
+    console.log('\x1b[31m',e);
   }
 };
 

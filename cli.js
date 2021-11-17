@@ -51,7 +51,7 @@ switch (CMD) {
 
   // create library files
   case "library":
-    require("./helper/create-lib").execute(CLI_KEYS, CLI_ARGS);
+    require("./helper/create-library").execute(CLI_KEYS, CLI_ARGS);
     break;
 
   
