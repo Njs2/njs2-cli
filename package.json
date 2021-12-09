@@ -6,7 +6,7 @@
   "bin": {
     "njs2": "cli.js"
   },
-  "keywords": [],
+  "keywords": ["njs2", "nodejs", "node", "javascript", "cli"],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -20,5 +20,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Njs2/njs2-cli.git"
   }
 }
