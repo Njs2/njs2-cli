@@ -7,9 +7,9 @@ const initPackage = async (LIBRARY_NAME) => {
   const PACKAGE = require(`${path.resolve(process.cwd(), `njs2_modules/${LIBRARY_NAME}/package.json`)}`);
 
   try {
-    const PLUGINS = PACKAGE['njs2-plugins'];
+    const PLUGINS = PACKAGE['njs2-endpoints'];
     PLUGINS.map(plugin => {
-      const METHOD_NAME = `${PACKAGE['njs2-method']}.${plugin}`;
+      const METHOD_NAME = `${PACKAGE['njs2-method-prefix']}.${plugin}`;
       const METHODS_PATH = `src/methods/${METHOD_NAME}`;
       const COPY_TEMP_SCRIPT = `cp -rn "${path.resolve(process.cwd(), '.')}/node_modules/@njs2/base/template/pluginStructure/." "${path.resolve(process.cwd(), '.')}/${METHODS_PATH}"`;
 
