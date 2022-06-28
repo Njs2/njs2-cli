@@ -28,7 +28,7 @@ const updatePostman = async () => {
     let apiDefination = {
       "name": apiPath.split('.').join('/'),
       "request": {
-        "method": typeof apiInitObj.pkgInitializer.requestMethod == "string" ? apiInitObj.pkgInitializer.requestMethod.toUpperCase() : apiInitObj.pkgInitializer.requestMethod[0].toUpperCase(),
+        "method": typeof apiInitObj.initializer.requestMethod == "string" ? apiInitObj.initializer.requestMethod.toUpperCase() : apiInitObj.initializer.requestMethod[0].toUpperCase(),
         "header": [{
           "key": 'enc_state',
           "value": '1',
@@ -54,7 +54,7 @@ const updatePostman = async () => {
       "response": []
     };
 
-    if (apiInitObj.pkgInitializer.isSecured) {
+    if (apiInitObj.initializer.isSecured) {
       apiDefination.request.header.push({
         "key": "access_token",
         "value": "",
@@ -68,11 +68,11 @@ const updatePostman = async () => {
         "value": paramsList[params].default,
         "disabled": !paramsList[params].required,
         "description": paramsList[params].description,
-        "type": fileExists && apiInitObj.pkgInitializer.requestMethod[0].toUpperCase() == 'POST' && paramsList[params].type == "file" ? "file" : "text"
+        "type": fileExists && apiInitObj.initializer.requestMethod[0].toUpperCase() == 'POST' && paramsList[params].type == "file" ? "file" : "text"
       };
     });
 
-    if (!(fileExists && apiInitObj.pkgInitializer.requestMethod[0].toUpperCase() == 'POST')) {
+    if (!(fileExists && apiInitObj.initializer.requestMethod[0].toUpperCase() == 'POST')) {
       paramsDef.push({
         "key": 'data',
         "value": '',
@@ -82,9 +82,9 @@ const updatePostman = async () => {
       });
     }
 
-    if (apiInitObj.pkgInitializer.requestMethod[0].toUpperCase() == 'GET') {
+    if (apiInitObj.initializer.requestMethod[0].toUpperCase() == 'GET') {
       apiDefination.request.url.query = paramsDef;
-    } else if (apiInitObj.pkgInitializer.requestMethod[0].toUpperCase() == 'POST') {
+    } else if (apiInitObj.initializer.requestMethod[0].toUpperCase() == 'POST') {
       if (fileExists) {
         apiDefination.request.body = {
           "mode": "formdata",
