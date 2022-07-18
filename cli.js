@@ -4,8 +4,9 @@ let CLI_ARGS = [];
 
 for (let i = 0; i < process.argv.slice(2).length; i++) {
   if (process.argv.slice(2)[i].split("--").length > 1) {
+    // option values are true by default.
     CLI_KEYS[process.argv.slice(2)[i].split("--")[1]] =
-      process.argv.slice(2)[i + 1];
+      process.argv.slice(2)[i + 1]||true;
     i++;
   } else {
     CLI_ARGS.push(process.argv.slice(2)[i]);
@@ -59,9 +60,9 @@ switch (CMD) {
     console.log(`
 njs2 project <project-name>
 njs2 endpoint <endpoint-name>
-njs2 run serverless
-njs2 run express
-njs2 run nodemon
+njs2 run serverless <options: [lint] >
+njs2 run express <options: [lint] >
+njs2 run nodemon <options: [lint] >
 njs2 package  <package-name>
 njs2 rm-package <package-name>
 njs2 compile
@@ -73,9 +74,9 @@ njs2 library <folder-name> <filename> <options : [sql,mongo]>`);
     console.log(`
 njs2 project <project-name>
 njs2 endpoint <endpoint-name>
-njs2 run serverless
-njs2 run express
-njs2 run nodemon
+njs2 run serverless <options: [lint] >
+njs2 run express <options: [lint] >
+njs2 run nodemon <options: [lint] >
 njs2 package  <package-name>
 njs2 rm-package <package-name>
 njs2 compile

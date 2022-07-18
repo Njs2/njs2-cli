@@ -24,8 +24,12 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
   // Creates postman.json that can be imported in postman
   require('./update-postman').updatePostman();
 
-  // Runs the lint proccess for syntax validations
-  child_process.execSync('npm run lint', { stdio: 'inherit' });
+
+  if(CLI_KEYS.lint){
+    // Runs the lint proccess for syntax validations
+    child_process.execSync('npm run lint', { stdio: 'inherit' });
+  }
+
 
   switch (CLI_ARGS[0]) {
     case 'serverless':
