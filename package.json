@@ -6,7 +6,13 @@
   "bin": {
     "njs2": "cli.js"
   },
-  "keywords": ["njs2", "nodejs", "node", "javascript", "cli"],
+  "keywords": [
+    "njs2",
+    "nodejs",
+    "node",
+    "javascript",
+    "cli"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

@@ -53,7 +53,10 @@ switch (CMD) {
   case "library":
     require("./helper/create-library").execute(CLI_KEYS, CLI_ARGS);
     break;
-
+  
+  case "upgrade":
+    require("./helper/upgrade-project").execute(CLI_KEYS, CLI_ARGS);
+    break;
   
   case "help":
     console.log(`
@@ -66,7 +69,9 @@ njs2 package  <package-name>
 njs2 rm-package <package-name>
 njs2 compile
 njs2 create-package <package-name>
-njs2 library <folder-name> <filename> <options : [sql,mongo]>`);
+njs2 library <folder-name> <filename> <options : [sql,mongo]>
+njs2 upgrade [version] [version-number]`);
+
     break;
 
   default:
@@ -80,6 +85,7 @@ njs2 package  <package-name>
 njs2 rm-package <package-name>
 njs2 compile
 njs2 create-package <package-name>
-njs2 library <folder-name> <filename> <options : [sql,mongo]>`);
+njs2 library <folder-name> <filename> <options : [sql,mongo]>
+njs2 upgrade [version] [version-number]`);
     break;
 }

@@ -58,3 +58,7 @@ module.exports.isValidVarName = (name) => {
 module.exports.validatePackageVersion = (val) => {
   return val == 'latest' || (val && val.length > 0 && val.split('.').map(val => isNaN(parseInt(val)) ? 0 : 1).reduce((accumulator, currentValue) => accumulator + currentValue) == 3);
 }
+
+module.exports.checkAndFindVersion = (CLI_ARGS) => {
+  return CLI_ARGS.includes("version")? CLI_ARGS[CLI_ARGS.indexOf("version")+1]?? false : false;
+}
