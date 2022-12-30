@@ -34,6 +34,11 @@ switch (CMD) {
     // Install packages to project
     require("./helper/install-package").execute(CLI_KEYS, CLI_ARGS);
     break;
+  
+  case "package-local":
+    // Install Locally Developed Private Packages to project
+    require("./helper/install-package-local-testing").execute(CLI_KEYS, CLI_ARGS);
+    break;
 
   case "rm-package":
     require("./helper/rm-package").execute(CLI_KEYS, CLI_ARGS);
@@ -65,7 +70,8 @@ njs2 endpoint <endpoint-name>
 njs2 run serverless
 njs2 run express
 njs2 run nodemon
-njs2 package  <package-name>
+njs2 package <package-name>
+njs2 package-local <package-name> <package-project-path>
 njs2 rm-package <package-name>
 njs2 compile
 njs2 create-package <package-name>
@@ -81,7 +87,8 @@ njs2 endpoint <endpoint-name>
 njs2 run serverless
 njs2 run express
 njs2 run nodemon
-njs2 package  <package-name>
+njs2 package <package-name>
+njs2 package-local <package-name> <package-project-path>
 njs2 rm-package <package-name>
 njs2 compile
 njs2 create-package <package-name>
