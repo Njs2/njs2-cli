@@ -32,6 +32,6 @@
     "url": "https://github.com/Njs2/njs2-cli.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Success: No test specified\" && exit 0"
   }
 }
