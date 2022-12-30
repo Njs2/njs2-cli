@@ -30,5 +30,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Njs2/njs2-cli.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
