@@ -81,6 +81,16 @@ To install custom Njs2 packages use `package` command with package name as argum
 njs2 package <package-name>
 ```
 
+## Install Local Private Njs2 packages
+Use this command to install private Njs2 packages that is yet to be published to private store.
+
+This command needs you to pass 2 parameters
+1. ```package-name```
+2. the ```path of the source code``` of this package
+```
+njs2 package-local <package-name> <package-local-project-path>
+```
+
 ## Uninstall Private Njs2 packages
 To uninstall custom Njs2 packages use `rm-package` command with package name as argument. This will uninstall the package from the project.
 ```
