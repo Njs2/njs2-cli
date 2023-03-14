@@ -14,7 +14,7 @@ const initEnv = async (LIBRARY_NAME) => {
   projectEnvFileContents = JSON.parse(projectEnvFileContents);
 
   if (Array.isArray(envFileContents)) {
-    // If public package then read other then organisation name key
+    // If public plugin then read other then organisation name key
     const configKey =
       LIBRARY_NAME.split("/").length == 1
         ? LIBRARY_NAME.toUpperCase()
@@ -53,7 +53,7 @@ const initEnv = async (LIBRARY_NAME) => {
       "utf8"
     );
   } else {
-    // If public package then read other then organisation name key
+    // If public plugin then read other then organisation name key
     const configKey =
       LIBRARY_NAME.split("/").length == 1
         ? LIBRARY_NAME

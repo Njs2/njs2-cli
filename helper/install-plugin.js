@@ -7,20 +7,20 @@ const path = require('path');
 const { validatePackageVersion, getCrossAccountCredentials } = require("./utils");
 const inquirer = require('inquirer');
 
-const PACKAGE_BASE_PATH = 'packages';
+const PLUGIN_BASE_PATH = 'packages';
 const DEFAULT_BUCKET_NAME = 'njs2';
 const AWS_DEFAULT_PROFILE = 'NJS2-REPO';
 let awsConfig = null;
 let s3BucketName = null;
 
 /**
- * @function downloadPackage
+ * @function downloadPlugin
  * @param {*} uri 
  * @param {*} filename 
  * @param {*} callback 
  * @description Download the package files from remote URI
  */
-const downloadPackage = async (uri, filename) => {
+const downloadPlugin = async (uri, filename) => {
   let s3;
   if (awsConfig.AWS_PROFILE && awsConfig.AWS_PROFILE.length > 0) {
     let credentials = new AWS.SharedIniFileCredentials({ profile: awsConfig.AWS_PROFILE });
@@ -40,12 +40,12 @@ const downloadPackage = async (uri, filename) => {
 };
 
 /**
- * @function isPackageExists
+ * @function isPluginExists
  * @param {*} url 
  * @returns {Promise<boolean>}
  * @description Check if remote file exists
  */
-const isPackageExists = async (url) => {
+const isPluginExists = async (url) => {
   let s3;
   if (awsConfig.AWS_PROFILE && awsConfig.AWS_PROFILE.length > 0) {
     let credentials = new AWS.SharedIniFileCredentials({ profile: awsConfig.AWS_PROFILE });
@@ -160,45 +160,45 @@ const getS3BucketName = async () => {
   return cliRes.s3_bucket_name;
 }
 
-// $ njs2 package njs2-sms-twillio@1.0.1
+// $ njs2 plugin njs2-sms-twillio@1.0.1
 const execute = async (CLI_KEYS, CLI_ARGS) => {
   try {
     if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
-      throw new Error('Run from project root direcory: njs2 package <package-name> (Eg: njs2-auth-email@latest)');
+      throw new Error('Run from project root direcory: njs2 plugin <plugin-name> (Eg: njs2-auth-email@latest)');
 
     const packageJson = require(`${path.resolve(process.cwd(), `package.json`)}`);
     if (packageJson['njs2-type'] != 'project') {
-      throw new Error('Run from project root direcory: njs2 package  <package-name> (Eg: njs2 package njs2-auth-email@latest)');
+      throw new Error('Run from project root direcory: njs2 plugin  <plugin-name> (Eg: njs2 plugin njs2-auth-email@latest)');
     }
 
-    let packageName = CLI_ARGS[0];
-    if (!packageName || packageName.length == 0) {
-      throw new Error('Invalid package name');
+    let pluginName = CLI_ARGS[0];
+    if (!pluginName || pluginName.length == 0) {
+      throw new Error('Invalid plugin name');
     }
 
-    // If package name has @ keyword then 2nd arrgumnet is version and replace with valid version
-    if (packageName.split('@').length == 2 && !validatePackageVersion(packageName.split('@')[1])) {
-      throw new Error('Invalid package version');
-    } else if (packageName.split('@').length == 1) {
-      packageName = `${packageName}@latest`;
+    // If plugin name has @ keyword then 2nd arrgumnet is version and replace with valid version
+    if (pluginName.split('@').length == 2 && !validatePackageVersion(pluginName.split('@')[1])) {
+      throw new Error('Invalid plugin version');
+    } else if (pluginName.split('@').length == 1) {
+      pluginName = `${pluginName}@latest`;
     }
 
     await getAWSConfig();
     await getS3BucketName();
-    // If package name has @ keyword then 2nd arrgumnet is version and compute the remote path
-    let PACKAGE_PATH = '';
+    // If plugin name has @ keyword then 2nd arrgumnet is version and compute the remote path
+    let PLUGIN_PATH = '';
     let remoteURL = '';
-    if (packageName.split('@').length == 2 && packageName.split('@')[1] != 'latest') {
-      PACKAGE_PATH = replaceAt(packageName, packageName.lastIndexOf('@'), '/');
-      remoteURL = `${PACKAGE_BASE_PATH}/${PACKAGE_PATH}.tar.gz`;
+    if (pluginName.split('@').length == 2 && pluginName.split('@')[1] != 'latest') {
+      PLUGIN_PATH = replaceAt(pluginName, pluginName.lastIndexOf('@'), '/');
+      remoteURL = `${PLUGIN_BASE_PATH}/${PLUGIN_PATH}.tar.gz`;
     } else {
-      PACKAGE_PATH = replaceAt(packageName.split('@').length == 2 && packageName.split('@')[1] == 'latest' ? packageName : `${packageName}@latest`, packageName.lastIndexOf('@'), '/');
-      remoteURL = `${PACKAGE_BASE_PATH}/${PACKAGE_PATH}.tar.gz`;
+      PLUGIN_PATH = replaceAt(pluginName.split('@').length == 2 && pluginName.split('@')[1] == 'latest' ? pluginName : `${pluginName}@latest`, pluginName.lastIndexOf('@'), '/');
+      remoteURL = `${PLUGIN_BASE_PATH}/${PLUGIN_PATH}.tar.gz`;
     }
 
-    const remoteFileExists = await isPackageExists(remoteURL);
-    if (!remoteFileExists) throw new Error("Remote package dose not Exists!!")
-    const urlComp = PACKAGE_PATH.split('/')[0];
+    const remoteFileExists = await isPluginExists(remoteURL);
+    if (!remoteFileExists) throw new Error("Remote plugin dose not Exists!!")
+    const urlComp = PLUGIN_PATH.split('/')[0];
     const fileName = `${urlComp}.tar.gz`;
     if (!fs.existsSync('njs2_modules'))
       fs.mkdirSync("njs2_modules");
@@ -207,23 +207,23 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
     if (!fs.existsSync(`njs2_modules/${folderName}`))
       fs.mkdirSync(`njs2_modules/${folderName}`);
 
-    // Download the package
-    await downloadPackage(remoteURL, `./njs2_modules/${folderName}.tar.gz`);
-    // Extract the package
+    // Download the plugin
+    await downloadPlugin(remoteURL, `./njs2_modules/${folderName}.tar.gz`);
+    // Extract the plugin
     await tar.x({
       file: `./njs2_modules/${fileName}`,
       cwd: `njs2_modules/${folderName}`
     });
     console.log("exract completed");
 
-    console.log("Installing package and dependencies!");
+    console.log("Installing plugin and dependencies!");
     child_process.execSync(`npm i "./njs2_modules/${folderName}"`, { stdio: 'inherit' });
     child_process.execSync(`npm i`, { stdio: 'inherit' });
     child_process.execSync(`rm "./njs2_modules/${fileName}"`);
     const pluginPackageJson = require(`${path.resolve(process.cwd(), `njs2_modules/${folderName}/package.json`)}`);
 
     if (pluginPackageJson['njs2-type'] == 'endpoint') {
-      await require('./init-package').initPackage(folderName);
+      await require('./init-plugin').initPackage(folderName);
     }
 
     if (pluginPackageJson['loadEnv']) {

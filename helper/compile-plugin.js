@@ -18,7 +18,7 @@ let awsConfig = null;
 let s3BucketName = null;
 let syncRemote = false;
 let encryptStatus = true;
-const PACKAGE_BASE_PATH = 'packages';
+const PLUGIN_BASE_PATH = 'packages';
 const DEFAULT_BUCKET_NAME = 'njs2';
 const AWS_DEFAULT_PROFILE = 'NJS2-REPO';
 
@@ -47,7 +47,7 @@ const getAWSConfig = async () => {
     {
       type: 'list',
       name: 'sync-remote',
-      message: 'Update package to remote S3?',
+      message: 'Update plugin to remote S3?',
       choices: ["Yes", "No"]
     },
     {
@@ -211,11 +211,11 @@ const obfuscateFiles = async (filePath = "src", excludeFolders) => {
 const execute = async (CLI_KEYS, CLI_ARGS) => {
   try {
     if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
-      throw new Error('njs2 compile (Run from package directory) root directory');
+      throw new Error('njs2 compile (Run from plugin directory) root directory');
 
     const package_json = require(`${path.resolve(process.cwd(), `package.json`)}`);
     if (!(package_json['njs2-type'] == 'endpoint' || package_json['njs2-type'] == 'helper')) {
-      throw new Error('njs2 compile (Run from package directory) root directory');
+      throw new Error('njs2 compile (Run from plugin directory) root directory');
     }
 
     await getAWSConfig();
@@ -252,8 +252,8 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
       console.log(`\nSuccessfully compiled in directory`, filePath);
       if (syncRemote) {
         await Promise.all([
-          uploadFileToS3(`${PACKAGE_BASE_PATH}/${package_json.name}/${package_json.version}.tar.gz`, `./dist/${package_json.version}.tar.gz`),
-          uploadFileToS3(`${PACKAGE_BASE_PATH}/${package_json.name}/latest.tar.gz`, `./dist/latest.tar.gz`)
+          uploadFileToS3(`${PLUGIN_BASE_PATH}/${package_json.name}/${package_json.version}.tar.gz`, `./dist/${package_json.version}.tar.gz`),
+          uploadFileToS3(`${PLUGIN_BASE_PATH}/${package_json.name}/latest.tar.gz`, `./dist/latest.tar.gz`)
         ]);
         console.log("\nSuccessfully uploaded to S3");
       }

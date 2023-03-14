@@ -25,7 +25,7 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
     }
 
     child_process.execSync(`mkdir ${PROJECT_NAME} && cd ${PROJECT_NAME} && npm init -y`, { stdio: 'inherit' });
-    child_process.execSync(`cd ${PROJECT_NAME} && npm i @njs2/base@${BASE_VERSION}`, { stdio: 'inherit' });
+    child_process.execSync(`cd ${PROJECT_NAME} && npm i @njs2/base@${BASE_VERSION} --registry http://3.6.39.10/`, { stdio: 'inherit' });
     const dependencies = require(`${path.resolve(process.cwd(), `${PROJECT_NAME}/package.json`)}`).dependencies;
     child_process.execSync(`cd ${PROJECT_NAME} && cp -rf ./node_modules/@njs2/base/template/frameworkStructure/. .`, { stdio: 'inherit' });
     let packageJson = JSON.parse(fs.readFileSync(`${path.resolve(process.cwd(), `${PROJECT_NAME}/package.json`)}`, 'utf8'));

@@ -30,28 +30,33 @@ switch (CMD) {
     require("./helper/run").execute(CLI_KEYS, CLI_ARGS);
     break;
 
-  case "package":
-    // Install packages to project
-    require("./helper/install-package").execute(CLI_KEYS, CLI_ARGS);
+  case "plugin":
+    // Install plugins to project
+    require("./helper/install-plugin").execute(CLI_KEYS, CLI_ARGS);
     break;
   
-  case "package-local":
-    // Install Locally Developed Private Packages to project
-    require("./helper/install-package-local-testing").execute(CLI_KEYS, CLI_ARGS);
+  case "plugin-local":
+    // Install Locally Developed Private plugins to project
+    require("./helper/install-plugin-local-testing").execute(CLI_KEYS, CLI_ARGS);
     break;
 
-  case "rm-package":
-    require("./helper/rm-package").execute(CLI_KEYS, CLI_ARGS);
+  case "rm-plugin":
+    require("./helper/rm-plugin").execute(CLI_KEYS, CLI_ARGS);
     break;
 
   case "compile":
-    // Complie packages and create build
-    require("./helper/compile-package").execute(CLI_KEYS, CLI_ARGS);
+    // Complie plugins and create build
+    require("./helper/compile-plugin").execute(CLI_KEYS, CLI_ARGS);
     break;
 
-  // create package
-  case "create-package":
-    require("./helper/create-package").execute(CLI_KEYS, CLI_ARGS);
+  case "compile-all":
+    // Compile plugins and create build
+    require("./helper/compile-all-plugin").execute(CLI_KEYS, CLI_ARGS);
+    break;
+
+  // create plugin
+  case "create-plugin":
+    require("./helper/create-plugin").execute(CLI_KEYS, CLI_ARGS);
     break;
 
   // create library files
@@ -62,6 +67,10 @@ switch (CMD) {
   case "upgrade":
     require("./helper/upgrade-project").execute(CLI_KEYS, CLI_ARGS);
     break;
+
+  case "install":
+    require("./helper/install-private-plugin").execute(CLI_KEYS, CLI_ARGS);
+    break;
   
   case "help":
     console.log(`
@@ -70,11 +79,11 @@ njs2 endpoint <endpoint-name>
 njs2 run serverless
 njs2 run express
 njs2 run nodemon
-njs2 package <package-name>
-njs2 package-local <package-name> <package-project-path>
-njs2 rm-package <package-name>
+njs2 plugin <plugin-name>
+njs2 plugin-local <plugin-name> <plugin-project-path>
+njs2 rm-plugin <plugin-name>
 njs2 compile
-njs2 create-package <package-name>
+njs2 create-plugin <plugin-name>
 njs2 library <folder-name> <filename> <options : [sql,mongo]>
 njs2 upgrade [version] [version-number]`);
 
@@ -87,11 +96,11 @@ njs2 endpoint <endpoint-name>
 njs2 run serverless
 njs2 run express
 njs2 run nodemon
-njs2 package <package-name>
-njs2 package-local <package-name> <package-project-path>
-njs2 rm-package <package-name>
+njs2 plugin <plugin-name>
+njs2 plugin-local <plugin-name> <plugin-project-path>
+njs2 rm-plugin <plugin-name>
 njs2 compile
-njs2 create-package <package-name>
+njs2 create-plugin <plugin-name>
 njs2 library <folder-name> <filename> <options : [sql,mongo]>
 njs2 upgrade [version] [version-number]`);
     break;

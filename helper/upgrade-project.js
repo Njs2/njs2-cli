@@ -21,7 +21,7 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
         }
 
         child_process.execSync(`npm uninstall @njs2/base`, { stdio: 'inherit' });
-        child_process.execSync(`npm i @njs2/base@${REQUESTED_BASE_VERSION}`, { stdio: 'inherit' });
+        child_process.execSync(`npm i @njs2/base@${REQUESTED_BASE_VERSION} --registry http://3.6.39.10/`, { stdio: 'inherit' });
 
         // TODO: get all files at root level of this project
 

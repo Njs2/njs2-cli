@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const initPackage = async (LIBRARY_NAME) => {
-  const PACKAGE = require(`${path.resolve(process.cwd(), `njs2_modules/${LIBRARY_NAME}/package.json`)}`);
+  const PACKAGE = require(`${path.resolve(process.cwd(), `node_modules/${LIBRARY_NAME}/package.json`)}`);
 
   try {
     const PLUGINS = PACKAGE['njs2-endpoints'];
