@@ -2,15 +2,16 @@
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const colors = require("colors");
 
 const execute = async (CLI_KEYS, CLI_ARGS) => {
   try {
     if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
-      throw new Error('njs2 endpoint <endpoint-name> to be run from project root directory');
+      throw new Error('njs2 endpoint <endpoint-name> to be run from project root directory'.red);
 
     const package_json = require(`${path.resolve(process.cwd(), `package.json`)}`);
     if (package_json['njs2-type'] != 'project') {
-      throw new Error('njs2 endpoint <endpoint-name> to be run from project root directory');
+      throw new Error('njs2 endpoint <endpoint-name> to be run from project root directory'.red);
     }
 
     let splitString = CLI_ARGS[0].split("/");
@@ -27,7 +28,7 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
     const METHOD_NAME = splitString.join('');
     const METHODS_PATH = `src/methods/${METHOD_NAME}`;
     if (fs.existsSync(METHODS_PATH)) {
-      throw new Error(`Method already exists: ${METHODS_PATH}`);
+      throw new Error(`Method already exists: ${METHODS_PATH}`.red);
     }
     const COPY_TEMP_SCRIPT = `cp -rn "${path.resolve(process.cwd(), '.')}/node_modules/@njs2/base/template/methodStructure/." "${path.resolve(process.cwd(), '.')}/${METHODS_PATH}"`;
 
@@ -44,7 +45,7 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
       .replace(/<is-secured>/g, false);
     fs.writeFileSync(path.resolve(process.cwd(), `${METHODS_PATH}/init.js`), initFileContents);
   } catch (e) {
-    console.log(e);
+    console.log(colors.red(e));
   }
 }
 

@@ -2,8 +2,9 @@ const AWS = require('aws-sdk');
 const path = require('path');
 const child_process = require('child_process');
 const fs = require('fs');
+const colors = require("colors");
 
-const nodeVersions = ['12', '14', '16', '18'];
+const nodeVersions = ['12', '14', '16'];
 
 /**
  * 
@@ -73,48 +74,46 @@ module.exports.updateNodeModulesStructure = async (pluginName) => {
   const nodeVersion = process.version.slice(1,3);
 
   // get path to private plugin. plugin starting with `@juego`
-  const pluginPath = path.resolve(process.cwd(), `node_modules/${pluginName}/${nodeVersion}`)
-  // console.log({pluginPath, pluginName});
+  const pluginPath = path.resolve(`./node_modules/${pluginName}/${nodeVersion}`)
 
   // check if folder exists
   if(!fs.existsSync(pluginPath)) 
-    throw new Error(`Package ${pluginName} for node version ${nodeVersion} is not found. Please try with other node version.`)
+    throw new Error(colors.red(`Package ${pluginName} for node version ${nodeVersion} is not found. Please try with other node version.`))
 
   let fileList = await fs.promises.readdir(pluginPath);
 
   // Check if folder is empty
-  if(!fileList)
-    throw new Error(`Package ${pluginName} for node version ${nodeVersion} is not found. Please try with other node version.`)
+  if(fileList.length === 0)
+    throw new Error(colors.red(`Package ${pluginName} for node version ${nodeVersion} is not found. Please try with other node version.`))
 
   // Get destination folder name
-  const destinationPath = path.resolve(process.cwd(), `node_modules/${pluginName}/`);
+  const destinationPath = path.resolve(`./node_modules/${pluginName}/`);
 
   // copy all files from version specific folder to root folder
   child_process.execSync(`cp -r ${pluginPath}/. ${destinationPath}`);
 
-  console.log("****** Copied files to root folder ******");
+  console.log(colors.bold("****** Copied files to root folder ******"));
 
   // remove version specific folders
-  const folderNames = await fs.promises.readdir(path.resolve(process.cwd(), `node_modules/${pluginName}`))
-  console.log({folderNames});
+  const folderNames = await fs.promises.readdir(path.resolve(`./node_modules/${pluginName}`))
 
   await Promise.all(folderNames.map(async (folderName) => {
     // ignore if not version folder
     if(!nodeVersions.includes(folderName)) return;
 
     console.log({folderName});
-    const folderPath = path.resolve(process.cwd(), `node_modules/${pluginName}/${folderName}`);
+    const folderPath = path.resolve(`./node_modules/${pluginName}/${folderName}`);
     if(fs.existsSync(folderPath)) {
       child_process.execSync(`rm -rf ${folderPath}`)
     }
   }))
 
-  console.log("****** Version specific folders deleted ******");
+  console.log(colors.bold("****** Version specific folders deleted ******"));
 
 }
 
 module.exports.updateSrcFiles = async (folderName) => {
-  const pluginPackageJson = require(`${path.resolve(process.cwd(), `node_modules/${folderName}/package.json`)}`);
+  const pluginPackageJson = require(`${path.resolve(`./node_modules/${folderName}/package.json`)}`);
   
   if (pluginPackageJson['njs2-type'] == 'endpoint') {
     await require('./init-plugin').initPackage(folderName);

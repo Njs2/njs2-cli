@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 const fs = require('fs-extra');
 const childProcess = require('child_process');
+const colors = require("colors");
 
 module.exports.execute = async (CLI_KEYS, CLI_ARGS) => {
   try {
     const PLUGIN_NAME = CLI_ARGS[0];
     // Validations
     if (!PLUGIN_NAME) {
-      throw new Error('Package name is mandatory parameter');
+      throw new Error('Package name is mandatory parameter'.red);
     }
 
     if (fs.existsSync(PLUGIN_NAME)) {
-      throw new Error(`Package folder already exists: ${PLUGIN_NAME}`);
+      throw new Error(`Package folder already exists: ${PLUGIN_NAME}`.red);
     }
 
     // Create package folder
@@ -20,6 +21,6 @@ module.exports.execute = async (CLI_KEYS, CLI_ARGS) => {
     childProcess.execSync(`cp -r ./tmp-package/njs2-package-template/package/* ${PLUGIN_NAME}`, { stdio: 'inherit' });
     childProcess.execSync(`rm -rf ./tmp-package`, { stdio: 'inherit' });
   } catch (error) {
-    console.error(error.message);
+    console.error(colors.red(error.message));
   }
 };

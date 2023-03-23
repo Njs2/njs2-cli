@@ -2,12 +2,13 @@
 const child_process = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const colors = require("colors");
 
 const execute = async (CLI_KEYS, CLI_ARGS) => {
   try {
     if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
       throw new Error(
-        "njs2 library <path> to be run from project root directory"
+        "njs2 library <path> to be run from project root directory".red
       );
 
     const package_json = require(`${path.resolve(
@@ -16,7 +17,7 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
     )}`);
     if (package_json["njs2-type"] != "project") {
       throw new Error(
-        "njs2 library <path> to be run from project root directory"
+        "njs2 library <path> to be run from project root directory".red
       );
     }
 
@@ -31,7 +32,7 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
     const LIB_FILE_NAME = CLI_ARGS[1];
     const LIB_FILE_PATH = `src/library/${LIB_NAME}/${LIB_FILE_NAME}.lib.js`;
     if (fs.existsSync(LIB_FILE_PATH)) {
-      throw new Error(`library file name  already exists: ${LIB_FILE_PATH}`);
+      throw new Error(`library file name  already exists: ${LIB_FILE_PATH}`.red);
     }
 
     CLI_ARGS[2] = CLI_ARGS[2] == undefined ? "default" : CLI_ARGS[2];
@@ -93,7 +94,7 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
       path.resolve(process.cwd(), `${LIB_PATH}/${LIB_FILE_NAME}.lib.js`),
       executeFileContents
     );
-    console.log('\x1b[32m',`Sucessfully created ${LIB_PATH}/${LIB_FILE_NAME}.lib.js`);
+    console.log('\x1b[32m',`Sucessfully created ${LIB_PATH}/${LIB_FILE_NAME}.lib.js`.green);
     if(CLI_ARGS[2] === "mongo"){
       fs.renameSync(
         `${path.resolve(
@@ -124,10 +125,10 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
         path.resolve(process.cwd(), `src/library/`+ CLI_ARGS[0] + `/`+`model/` + LIB_FILE_NAME + ".js"),
         executeFileContents
       );
-      console.log('\x1b[32m',`Sucessfully created src/library/`+ CLI_ARGS[0] + `/`+`model/` + LIB_FILE_NAME + ".js");
+      console.log('\x1b[32m',`Sucessfully created src/library/`+ CLI_ARGS[0] + `/`+`model/` + LIB_FILE_NAME + ".js".green);
     }
   } catch (e) {
-    console.log('\x1b[31m',e);
+    console.log(colors.red('\x1b[31m',e));
   }
 };
 

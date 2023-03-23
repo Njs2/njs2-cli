@@ -54,16 +54,20 @@ const obfuscateFilesInDirectory = async (dirPath, excludeFolders) => {
 
   console.log('filePath==>', process.cwd(), filePath);
   console.log('excludeFolders==>', excludeFolders);
-  (async execute => {
+  (async () => {
     try {
         if (!fs.existsSync(`${path.resolve(filePath, `package.json`)}`))
           throw new Error('njs2 compile (Run from package directory) root directory');
-        const package_json = require(`${path.resolve(filePath, `package.json`)}`);
+        let package_json = require(`${path.resolve(filePath, `package.json`)}`);
         if (!(package_json['njs2-type'] == 'endpoint' || package_json['njs2-type'] == 'helper')) {
           throw new Error('njs2 other compile (Run from plugin directory) root directory');
         }
+        package_json.nodeVersion = process.versions.node;
+        fs.writeFileSync(`${path.resolve(filePath, `package.json`)}`, JSON.stringify(package_json, null, 2));
         await obfuscateFiles(filePath, excludeFolders);
     } catch(e) {
         console.log(e);
+        fs.emptyDirSync(filePath);
+        return;
     }
   })();

@@ -1,6 +1,7 @@
 const child_process = require("child_process");
 const path = require('path');
 const fs = require('fs');
+const colors = require("colors");
 
 /**
  * @param {*} CLI_KEYS 
@@ -14,11 +15,11 @@ const fs = require('fs');
 const execute = async (CLI_KEYS, CLI_ARGS) => {
   // Validation to run from project folder
   if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
-    throw new Error('Run from project root direcory: njs2 run');
+    throw new Error('Run from project root direcory: njs2 run'.red);
 
   const packageJson = require(`${path.resolve(process.cwd(), `package.json`)}`);
   if (packageJson['njs2-type'] != 'project') {
-    throw new Error('Run from project root direcory: njs2 run');
+    throw new Error('Run from project root direcory: njs2 run'.red);
   }
 
   // Creates postman.json that can be imported in postman

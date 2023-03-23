@@ -2,6 +2,7 @@
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const colors = require("colors");
 
 const initPackage = async (LIBRARY_NAME) => {
   const PACKAGE = require(`${path.resolve(process.cwd(), `node_modules/${LIBRARY_NAME}/package.json`)}`);
@@ -23,7 +24,7 @@ const initPackage = async (LIBRARY_NAME) => {
       fs.writeFileSync(path.resolve(process.cwd(), `${METHODS_PATH}/init.js`), initFileContents);
     });
   } catch (e) {
-    console.log(e);
+    console.log(colors.red(e));
   }
 }
 

@@ -5,50 +5,74 @@ const path = require('path');
 const { promisify } = require('util');
 const exec = promisify(child_process.exec);
 const { updateNodeModulesStructure, updateSrcFiles } = require('./utils');
+const colors = require("colors");
+
+const excludeFolders = ["node_modules", "package.json"];
 
 const execute = async (CLI_KEYS, CLI_ARGS) => {
   try {
 
-    let pluginName = CLI_ARGS[0];
+    let pluginName = CLI_ARGS[1];
+    let localFolder = false;
+
+    if(!pluginName.startsWith("@juego")) {
+      pluginName = "@juego/" + pluginName.split('/').pop();
+      localFolder = true;
+    }
+    const registryUrl = "https://plugins.juegogames.com/";
     const nodeVersion = process.version.slice(1,3);
 
     if(CLI_ARGS.length != 0) {
 
-      const rcFileExists = fs.existsSync(path.resolve(process.cwd(), ".npmrc"));
-
-      if(!rcFileExists) {
+      if(!fs.existsSync(path.resolve(process.cwd(), ".npmrc"))) {
         console.log("Created .npmrc file");
-        fs.writeFileSync(path.resolve(process.cwd(), ".npmrc"), "@juego:registry=http://localhost:8000/");
+        fs.writeFileSync(path.resolve(process.cwd(), ".npmrc"), `@juego:registry=${registryUrl}`);
       }
 
-      if(fs.existsSync(path.resolve(process.cwd(), `node_modules/${CLI_ARGS[0]}`))) {
-        await exec(`npm uninstall ${CLI_ARGS[0]}`, { stdio: 'inherit' });
+      if(fs.existsSync(path.resolve(`./node_modules/${CLI_ARGS[1]}`))) {
+        await exec(`npm uninstall ${CLI_ARGS[1]}`, { stdio: 'inherit' });
       }
+
+      console.log(`Installing plugin for node version ${process.versions.node}`.bold.green);
 
       // install the packages
-      await exec(`npm i ${CLI_ARGS[0]}`, { stdio: 'inherit' });
+      await exec(`npm i ${CLI_ARGS[1]}`, { stdio: 'inherit' });
 
       // Check if compiled version exists for a particular node version
-      if(!fs.existsSync(path.resolve(process.cwd(), `node_modules/${pluginName}/${nodeVersion}`))) {
-        let files = await fs.promises.readdir(path.resolve(process.cwd(), `node_modules/${pluginName}`));
-        console.log({files});
-        // child_process.execSync(`npm uninstall ${CLI_ARGS[0]}`, { stdio: 'inherit' });
-        throw new Error(`Package does not exist for node version ${nodeVersion}. Please try installing again or install with other node version!`);
+      if(
+        !localFolder &&
+        !fs.existsSync(path.resolve(`./node_modules/${pluginName}/${nodeVersion}`))
+      ) {
+        let pluginFolders = await fs.promises.readdir(path.resolve(`./node_modules/${pluginName}`));
+
+        let availableVersions = [];
+        pluginFolders.map(folder => {
+          if(!excludeFolders.includes(folder)) {
+            availableVersions.push(folder + ".x");
+          }
+        });
+
+        const availableVersionString = availableVersions.join(" | ");
+
+        child_process.execSync(`npm uninstall ${CLI_ARGS[1]}`, { stdio: 'inherit' });
+        throw new Error(`
+        The Plugin you are trying to install does not exist for the current Node version: ${nodeVersion}!
+        Plugin is only Available for following Major versions: ${availableVersionString}
+        You can request the Maintianer to update the Plugin or Switch to the Supported Node Versions.
+        `.red);
       }
 
-      await updateNodeModulesStructure(pluginName);
+      if(!localFolder) await updateNodeModulesStructure(pluginName);
       await updateSrcFiles(pluginName);
 
-          
-      if(!rcFileExists) {
-        console.log("removed .npmrc file");
-        child_process.execSync(`rm -rf ${path.resolve(process.cwd(), ".npmrc")}`);
-      }
-      
-    } else {
-      child_process.execSync(`npm i`, { stdio: 'inherit' });
+      console.log(`Installation completed!`.bold.green);
 
-      let packageList = await fs.promises.readdir(path.resolve(process.cwd(), `node_modules/@juego/`));
+    } else {
+
+      console.log(`Installing plugins for node version ${process.versions.node}`.bold.green);
+
+      // Update plugin structure in node_modules
+      let packageList = await fs.promises.readdir(path.resolve(`./node_modules/@juego/`));
 
       await Promise.all(
         packageList.map(async (pluginName) => {
@@ -56,12 +80,12 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
         })
       );
 
+      console.log(`Installation completed!`.bold.green);
+
     }
 
-    return;
-
   } catch (e) {
-    console.error(e);
+    console.error(colors.red(e));
     process.exit(1);
   }
 }
