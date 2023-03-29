@@ -3,18 +3,18 @@ const path = require("path");
 
 const initEnv = async (LIBRARY_NAME) => {
   let envFileContents = fs.readFileSync(
-    path.resolve(process.cwd(), `node_modules/${LIBRARY_NAME}/env.json`),
+    path.resolve(`./node_modules/${LIBRARY_NAME}/env.json`),
     "utf8"
   );
   let projectEnvFileContents = fs.readFileSync(
-    path.resolve(process.cwd(), `src/config/config.json`),
+    path.resolve(`./src/config/config.json`),
     "utf8"
   );
   envFileContents = JSON.parse(envFileContents);
   projectEnvFileContents = JSON.parse(projectEnvFileContents);
 
   if (Array.isArray(envFileContents)) {
-    // If public package then read other then organisation name key
+    // If public plugin then read other then organisation name key
     const configKey =
       LIBRARY_NAME.split("/").length == 1
         ? LIBRARY_NAME.toUpperCase()
@@ -48,12 +48,12 @@ const initEnv = async (LIBRARY_NAME) => {
     });
 
     fs.writeFileSync(
-      path.resolve(process.cwd(), `src/config/config.json`),
+      path.resolve(`./src/config/config.json`),
       JSON.stringify(projectEnvFileContents, null, 2),
       "utf8"
     );
   } else {
-    // If public package then read other then organisation name key
+    // If public plugin then read other then organisation name key
     const configKey =
       LIBRARY_NAME.split("/").length == 1
         ? LIBRARY_NAME
@@ -68,7 +68,7 @@ const initEnv = async (LIBRARY_NAME) => {
     }
 
     fs.writeFileSync(
-      path.resolve(process.cwd(), `src/config/config.json`),
+      path.resolve(`./src/config/config.json`),
       JSON.stringify(projectEnvFileContents, null, 2),
       "utf8"
     );
