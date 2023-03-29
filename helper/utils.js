@@ -101,7 +101,7 @@ module.exports.updateNodeModulesStructure = async (pluginName) => {
     // ignore if not version folder
     if(!nodeVersions.includes(folderName)) return;
 
-    console.log({folderName});
+    console.log(`Copied files for Node v${folderName}.x.x`.green);
     const folderPath = path.resolve(`./node_modules/${pluginName}/${folderName}`);
     if(fs.existsSync(folderPath)) {
       child_process.execSync(`rm -rf ${folderPath}`)

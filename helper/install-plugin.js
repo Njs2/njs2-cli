@@ -1,236 +1,93 @@
 #!/usr/bin/env node
-const tar = require("tar");
-const fs = require("fs");
-const child_process = require("child_process");
-const AWS = require('aws-sdk');
+const child_process = require('child_process');
+const fs = require('fs');
 const path = require('path');
-const { validatePackageVersion, getCrossAccountCredentials } = require("./utils");
-const inquirer = require('inquirer');
+const { promisify } = require('util');
+const exec = promisify(child_process.exec);
+const { updateNodeModulesStructure, updateSrcFiles } = require('./utils');
+const colors = require("colors");
 
-const PLUGIN_BASE_PATH = 'packages';
-const DEFAULT_BUCKET_NAME = 'njs2';
-const AWS_DEFAULT_PROFILE = 'NJS2-REPO';
-let awsConfig = null;
-let s3BucketName = null;
+const excludeFolders = ["node_modules", "package.json"];
 
-/**
- * @function downloadPlugin
- * @param {*} uri 
- * @param {*} filename 
- * @param {*} callback 
- * @description Download the package files from remote URI
- */
-const downloadPlugin = async (uri, filename) => {
-  let s3;
-  if (awsConfig.AWS_PROFILE && awsConfig.AWS_PROFILE.length > 0) {
-    let credentials = new AWS.SharedIniFileCredentials({ profile: awsConfig.AWS_PROFILE });
-    AWS.config.credentials = credentials;
-    s3 = new AWS.S3();
-  } else {
-    const credentials = await getCrossAccountCredentials(awsConfig);
-    s3 = new AWS.S3(credentials);
-  }
-  const data = await s3.getObject({
-    Bucket: s3BucketName,
-    Key: uri
-  }).promise();
-
-  fs.writeFileSync(filename, data.Body);
-  console.log('file downloaded successfully');
-};
-
-/**
- * @function isPluginExists
- * @param {*} url 
- * @returns {Promise<boolean>}
- * @description Check if remote file exists
- */
-const isPluginExists = async (url) => {
-  let s3;
-  if (awsConfig.AWS_PROFILE && awsConfig.AWS_PROFILE.length > 0) {
-    let credentials = new AWS.SharedIniFileCredentials({ profile: awsConfig.AWS_PROFILE });
-    AWS.config.credentials = credentials;
-    s3 = new AWS.S3();
-  } else {
-    const credentials = await getCrossAccountCredentials(awsConfig);
-    s3 = new AWS.S3(credentials);
-  }
-  try {
-    await s3.headObject({
-      Bucket: s3BucketName,
-      Key: url
-    }).promise();
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-const replaceAt = function (str, index, replacement) {
-  return str.substr(0, index) + replacement + str.substr(index + replacement.length);
-}
-
-const getAWSConfig = async () => {
-  const awsTypeRes = await inquirer
-    .prompt([
-      {
-        type: 'list',
-        name: 'aws_type',
-        message: 'Select AWS credentials type:',
-        choices: ['CLI Profile', 'Access credentials'],
-      }
-    ]);
-
-  if (awsTypeRes.aws_type === 'CLI Profile') {
-    const awsProfileRes = await inquirer
-      .prompt([
-        {
-          type: 'input',
-          name: 'aws_profile',
-          message: 'AWS profile name:',
-          default: AWS_DEFAULT_PROFILE,
-          validate: (val) => {
-            return val && val.length > 0;
-          }
-        }
-      ]);
-
-    awsConfig = {
-      AWS_PROFILE: awsProfileRes.aws_profile
-    };
-    return awsConfig;
-  } else {
-    const awsAccessRes = await inquirer
-      .prompt([
-        {
-          type: 'input',
-          name: 'aws_access_key_id',
-          message: 'AWS access key id:',
-          validate: (val) => {
-            return val && val.length > 0;
-          }
-        },
-        {
-          type: 'input',
-          name: 'aws_secret_access_key',
-          message: 'AWS secret access key:',
-          validate: (val) => {
-            return val && val.length > 0;
-          }
-        },
-        {
-          type: 'input',
-          name: 'aws_role_arn',
-          message: 'AWS Role ARN:',
-          default: null
-        },
-        {
-          type: 'input',
-          name: 'region',
-          message: 'AWS region:',
-          default: 'ap-south-1'
-        }
-      ]);
-
-    awsConfig = {
-      AWS_ACCESS_KEY_ID: awsAccessRes.aws_access_key_id,
-      AWS_SECRET_ACCESS_KEY_ID: awsAccessRes.aws_secret_access_key,
-      AWS_ROLE_ARN: awsAccessRes.aws_role_arn,
-      AWS_REGION: awsAccessRes.region
-    };
-    return awsConfig;
-  }
-}
-
-const getS3BucketName = async () => {
-  const cliRes = await inquirer
-    .prompt([
-      {
-        type: 'input',
-        name: 's3_bucket_name',
-        message: 'Enter S3 bucket name:',
-        default: DEFAULT_BUCKET_NAME,
-        validate: (val) => {
-          return val && val.length > 0;
-        }
-      }
-    ]);
-
-  s3BucketName = cliRes.s3_bucket_name;
-  return cliRes.s3_bucket_name;
-}
-
-// $ njs2 plugin njs2-sms-twillio@1.0.1
 const execute = async (CLI_KEYS, CLI_ARGS) => {
   try {
-    if (!fs.existsSync(`${path.resolve(process.cwd(), `package.json`)}`))
-      throw new Error('Run from project root direcory: njs2 plugin <plugin-name> (Eg: njs2-auth-email@latest)');
 
-    const packageJson = require(`${path.resolve(process.cwd(), `package.json`)}`);
-    if (packageJson['njs2-type'] != 'project') {
-      throw new Error('Run from project root direcory: njs2 plugin  <plugin-name> (Eg: njs2 plugin njs2-auth-email@latest)');
-    }
+    let pluginName = CLI_ARGS[1];
+    let localFolder = false;
 
-    let pluginName = CLI_ARGS[0];
-    if (!pluginName || pluginName.length == 0) {
-      throw new Error('Invalid plugin name');
-    }
+    const registryUrl = "https://plugins.juegogames.com/";
+    const nodeVersion = process.version.slice(1,3);
 
-    // If plugin name has @ keyword then 2nd arrgumnet is version and replace with valid version
-    if (pluginName.split('@').length == 2 && !validatePackageVersion(pluginName.split('@')[1])) {
-      throw new Error('Invalid plugin version');
-    } else if (pluginName.split('@').length == 1) {
-      pluginName = `${pluginName}@latest`;
-    }
+    if(pluginName) {
 
-    await getAWSConfig();
-    await getS3BucketName();
-    // If plugin name has @ keyword then 2nd arrgumnet is version and compute the remote path
-    let PLUGIN_PATH = '';
-    let remoteURL = '';
-    if (pluginName.split('@').length == 2 && pluginName.split('@')[1] != 'latest') {
-      PLUGIN_PATH = replaceAt(pluginName, pluginName.lastIndexOf('@'), '/');
-      remoteURL = `${PLUGIN_BASE_PATH}/${PLUGIN_PATH}.tar.gz`;
+      if(!pluginName.startsWith("@juego")) {
+        pluginName = "@juego/" + pluginName.split('/').pop();
+        localFolder = true;
+      }
+
+      if(!fs.existsSync(path.resolve(process.cwd(), ".npmrc"))) {
+        console.log("Created .npmrc file");
+        fs.writeFileSync(path.resolve(process.cwd(), ".npmrc"), `@juego:registry=${registryUrl}`);
+      }
+
+      if(fs.existsSync(path.resolve(`./node_modules/${CLI_ARGS[1]}`))) {
+        await exec(`npm uninstall ${CLI_ARGS[1]}`, { stdio: 'inherit' });
+      }
+
+      console.log(`Installing plugin for node version ${process.versions.node}`.bold.green);
+
+      // install the packages
+      await exec(`npm i ${CLI_ARGS[1]}`, { stdio: 'inherit' });
+
+      // Check if compiled version exists for a particular node version
+      if(
+        !localFolder &&
+        !fs.existsSync(path.resolve(`./node_modules/${pluginName}/${nodeVersion}`))
+      ) {
+        let pluginFolders = await fs.promises.readdir(path.resolve(`./node_modules/${pluginName}`));
+
+        let availableVersions = [];
+        pluginFolders.map(folder => {
+          if(!excludeFolders.includes(folder)) {
+            availableVersions.push(folder + ".x");
+          }
+        });
+
+        const availableVersionString = availableVersions.join(" | ");
+
+        child_process.execSync(`npm uninstall ${CLI_ARGS[1]}`, { stdio: 'inherit' });
+        throw new Error(`
+        The Plugin you are trying to install does not exist for the current Node version: ${nodeVersion}!
+        Plugin is only Available for following Major versions: ${availableVersionString}
+        You can request the Maintianer to update the Plugin or Switch to the Supported Node Versions.
+        `.red);
+      }
+
+      if(!localFolder) await updateNodeModulesStructure(pluginName);
+      await updateSrcFiles(pluginName);
+
+      console.log(`Installation completed!`.bold.green);
+
     } else {
-      PLUGIN_PATH = replaceAt(pluginName.split('@').length == 2 && pluginName.split('@')[1] == 'latest' ? pluginName : `${pluginName}@latest`, pluginName.lastIndexOf('@'), '/');
-      remoteURL = `${PLUGIN_BASE_PATH}/${PLUGIN_PATH}.tar.gz`;
+
+      console.log(`Installing plugins for node version ${process.versions.node}`.bold.green);
+
+      // Update plugin structure in node_modules
+      let packageList = await fs.promises.readdir(path.resolve(`./node_modules/@juego/`));
+
+      await Promise.all(
+        packageList.map(async (pluginName) => {
+          await updateNodeModulesStructure(`@juego/${pluginName}`);
+        })
+      );
+
+      console.log(`Installation completed!`.bold.green);
+
     }
 
-    const remoteFileExists = await isPluginExists(remoteURL);
-    if (!remoteFileExists) throw new Error("Remote plugin dose not Exists!!")
-    const urlComp = PLUGIN_PATH.split('/')[0];
-    const fileName = `${urlComp}.tar.gz`;
-    if (!fs.existsSync('njs2_modules'))
-      fs.mkdirSync("njs2_modules");
-
-    let folderName = fileName.split('.')[0];
-    if (!fs.existsSync(`njs2_modules/${folderName}`))
-      fs.mkdirSync(`njs2_modules/${folderName}`);
-
-    // Download the plugin
-    await downloadPlugin(remoteURL, `./njs2_modules/${folderName}.tar.gz`);
-    // Extract the plugin
-    await tar.x({
-      file: `./njs2_modules/${fileName}`,
-      cwd: `njs2_modules/${folderName}`
-    });
-    console.log("exract completed");
-
-    console.log("Installing plugin and dependencies!");
-    child_process.execSync(`npm i "./njs2_modules/${folderName}"`, { stdio: 'inherit' });
-    child_process.execSync(`npm i`, { stdio: 'inherit' });
-    child_process.execSync(`rm "./njs2_modules/${fileName}"`);
-    const pluginPackageJson = require(`${path.resolve(process.cwd(), `njs2_modules/${folderName}/package.json`)}`);
-
-    if (pluginPackageJson['njs2-type'] == 'endpoint') {
-      await require('./init-plugin').initPackage(folderName);
-    }
-
-    if (pluginPackageJson['loadEnv']) {
-      await require('./init-env').initEnv(folderName);
-    }
   } catch (e) {
-    console.error(e);
+    console.error(colors.red(e));
+    process.exit(1);
   }
 }
 

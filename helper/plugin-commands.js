@@ -3,9 +3,6 @@
 const execute = async (CLI_KEYS, CLI_ARGS) => {
 
   const CMD = CLI_ARGS[0];
-  console.log({CLI_ARGS});
-
-  // CLI_ARGS = CLI_ARGS.slice(1);
 
   switch(CMD) {      
     case "compile":
@@ -13,7 +10,7 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
       break;
     
     case "install":
-      require("./install-private-plugin").execute(CLI_KEYS, CLI_ARGS);
+      require("./install-plugin").execute(CLI_KEYS, CLI_ARGS);
       break;
 
     case "uninstall":
