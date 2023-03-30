@@ -57,7 +57,7 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
       COPY_TEMP_SCRIPT = `cp -rn "${path.resolve(
         process.cwd(),
         "."
-      )}/node_modules/@njs22/base/template/libraryStructure/default/." "${path.resolve(
+      )}/node_modules/@njs2/base/template/libraryStructure/default/." "${path.resolve(
         process.cwd(),
         "."
       )}/${LIB_PATH}"`;

@@ -21,8 +21,8 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
             REQUESTED_BASE_VERSION = checkAndFindVersion(CLI_ARGS)
         }
 
-        child_process.execSync(`npm uninstall @njs22/base`, { stdio: 'inherit' });
-        child_process.execSync(`npm i @njs22/base@${REQUESTED_BASE_VERSION} --registry https://plugins.juegogames.com/`, { stdio: 'inherit' });
+        child_process.execSync(`npm uninstall @njs2/base`, { stdio: 'inherit' });
+        child_process.execSync(`npm i @njs2/base@${REQUESTED_BASE_VERSION} --registry https://plugins.juegogames.com/`, { stdio: 'inherit' });
 
         // TODO: get all files at root level of this project
 
