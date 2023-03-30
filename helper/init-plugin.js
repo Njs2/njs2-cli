@@ -12,7 +12,7 @@ const initPackage = async (LIBRARY_NAME) => {
     PLUGINS.map(plugin => {
       const METHOD_NAME = `${PACKAGE['njs2-method-prefix']}.${plugin}`;
       const METHODS_PATH = `src/methods/${METHOD_NAME}`;
-      const COPY_TEMP_SCRIPT = `cp -rn "./node_modules/@njs22/base/template/pluginStructure/." "./${METHODS_PATH}"`;
+      const COPY_TEMP_SCRIPT = `cp -rn "./node_modules/@njs2/base/template/pluginStructure/." "./${METHODS_PATH}"`;
 
       child_process.execSync(COPY_TEMP_SCRIPT);
       let executeFileContents = fs.readFileSync(path.resolve(`./${METHODS_PATH}/action.js`), 'utf8');
