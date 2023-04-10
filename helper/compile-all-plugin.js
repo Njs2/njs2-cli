@@ -90,14 +90,9 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
         child_process.execSync(` rsync -r --exclude 'dist' * ./dist/${version}`);
         console.log(`Compiling for node version ${version}`.green);
 
-        // add node version in package.json
-        // let packageJson = require(`${path.resolve(process.cwd(), `${filePath}/package.json`)}`);
-        // packageJson.nodeVersion = version;
-        // fs.writeFileSync(`${path.resolve(process.cwd(), `${filePath}/package.json`)}`, JSON.stringify(packageJson, null, 2));
-
         if (encryptStatus) {
           if(versionManager === "NVM") {
-              child_process.execSync(`. ~/.nvm/nvm.sh && nvm run ${version} ~/.nvm/versions/node/${process.version}/lib/node_modules/@juego/njs2-cli2/helper/compile-all-plugin-helper.js ${process.cwd()}/${filePath} ${excludeFolders[0]}`);
+              child_process.execSync(`. ~/.nvm/nvm.sh && nvm run ${version} ~/.nvm/versions/node/${process.version}/lib/node_modules/@njs2/cli/helper/compile-all-plugin-helper.js ${process.cwd()}/${filePath} ${excludeFolders[0]}`);
           }
           console.log(`Compiled for node version ${version}`.green);
         }
