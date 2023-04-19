@@ -19,9 +19,26 @@ let syncRemote = false;
 let encryptStatus = true;
 let versionManager = false;
 let nodeVersions = ["12", "14", "16"];
+
+const checkIfUserLoggedIn = async () => {
+  try {
+    // Check if user logged into NPM
+    const user = child_process.execSync(`npm whoami --registry=${registryUrl}`, {encoding: "utf8", stdio: "pipe"});
+    console.log(`Logged in as: ${user}`.bold);
+  } catch (e) {
+    throw (`
+    It appears that you are not logged into NPM!
+
+    Run following command to login:
+      ${colors.white('npm login --registry=https://plugins.juegogames.com')}
+    `);
+  }
+}
+
 const uploadFileToRegistry = async ( filepath ) => {
-  child_process.execSync(`cp package.json ${filepath} && cd ${filepath} && npm publish --registry ${registryUrl}`);
-};
+  child_process.execSync(`cp package.json ${filepath} && cd ${filepath} && npm publish --registry ${registryUrl}`, { stdio: "inherit" });
+}
+
 const getRegistryUploadStatus = async () => {
   const cliRes = await inquirer.prompt([
     {
@@ -102,7 +119,10 @@ const execute = async (CLI_KEYS, CLI_ARGS) => {
         return;
       }
     }));
-    if (syncRemote) await uploadFileToRegistry('dist');
+    if (syncRemote) {
+      await checkIfUserLoggedIn();
+      await uploadFileToRegistry('dist');
+    }
   } catch (e) {
     console.error(colors.red(e));
   }
