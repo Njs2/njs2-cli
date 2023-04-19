@@ -79,16 +79,15 @@ switch (CMD) {
   
   case "help":
     console.log(`
-njs2 project <project-name>
+njs2 project <project-name> [version] [version-number] 
 njs2 endpoint <endpoint-name>
 njs2 run serverless
 njs2 run express
 njs2 run nodemon
-njs2 plugin-local <plugin-name> <plugin-project-path>
 njs2 plugin <plugin-name>
 njs2 plugin uninstall <plugin-name>
 njs2 plugin compile
-njs2 plugin install <plugin-name>
+njs2 plugin install [<plugin-name>]
 njs2 library <folder-name> <filename> <options : [sql,mongo]>
 njs2 upgrade [version] [version-number]`);
 
@@ -96,16 +95,15 @@ njs2 upgrade [version] [version-number]`);
 
   default:
     console.log(`
-njs2 project <project-name>
+njs2 project <project-name> [version] [version-number] 
 njs2 endpoint <endpoint-name>
 njs2 run serverless
 njs2 run express
 njs2 run nodemon
-njs2 plugin-local <plugin-name> <plugin-project-path>
 njs2 plugin <plugin-name>
 njs2 plugin uninstall <plugin-name>
 njs2 plugin compile
-njs2 plugin install <plugin-name>
+njs2 plugin install [<plugin-name>]
 njs2 library <folder-name> <filename> <options : [sql,mongo]>
 njs2 upgrade [version] [version-number]`);
     break;
