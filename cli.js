@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+const { readFileSync } = require("fs")
+
 let CLI_KEYS = {};
 let CLI_ARGS = [];
 
@@ -94,6 +97,7 @@ njs2 upgrade [version] [version-number]`);
     break;
 
   default:
+    console.log('CLI Version: ' + JSON.parse(readFileSync('./package.json')).version)
     console.log(`
 njs2 project <project-name> [version] [version-number] 
 njs2 endpoint <endpoint-name>
